@@ -1,15 +1,15 @@
 TARGET0 = /root/.vim/nerdtree_plugin/
 
 SUBDIRS = 
-INC_SRC0 = exec_menuitem.vim. fs_menu.vim.
+INC_SRC0 = fs_menu.vim. exec_menuitem.vim.
  
 INSTALL0 = /usr/bin/install -m 644 -o root -g root $< $(TARGET0)
 
 
 all:
-exec_menuitem.vim.: exec_menuitem.vim
-	$(INSTALL0)
 fs_menu.vim.: fs_menu.vim
+	$(INSTALL0)
+exec_menuitem.vim.: exec_menuitem.vim
 	$(INSTALL0)
 
 

@@ -33,11 +33,6 @@ class sw_create_database
 	/**
 	 * SQL语句的注释字符串  
 	 */
-	const DATABASE_XML = '/root/code/swansoft/docs/database/db_schema.xml';
-
-	/**
-	 * SQL语句的注释字符串  
-	 */
 	const SQL_COMMENT = '-- ';
 
 	/**
@@ -65,16 +60,29 @@ class sw_create_database
 	 */
 	const SPACE_KEY = ' ';
 
+	/**
+	 * VIM描述 
+	 */
+	const VIM_HEADER = 'vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker:';
+
 	// }}}	
 	// {{{ members
 
 	/**
-	 * 头部信息 
+	 * 数据库XML文件 
 	 * 
 	 * @var string
 	 * @access protected
 	 */
-	protected $__header_desc = 'vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker:';
+	protected $__xml_filename = '';
+
+	/**
+	 * 输出的目录 
+	 * 
+	 * @var string
+	 * @access protected
+	 */
+	protected $__out_put_dir = '';
 
 	// }}}
 	// {{{ functions
@@ -88,16 +96,22 @@ class sw_create_database
 	 */
 	public function run()
 	{
+		if (!file_exists($this->__xml_filename)
+			|| !file_exists($this->__out_put_dir)) {
+			require PATH_SWAN_LIB . 'sw_exception.class.php';
+			throw new sw_exception('database xml desc file or output directory not exists. ');	
+		}
+
 		$xml2array = sw_xml::factory('xml2array');
 
-		$xml2array->set_filename(self::DATABASE_XML);
+		$xml2array->set_filename($this->__xml_filename);
 		$array = $xml2array->xml2array();
 		
 		$tmp = isset($array['databases']['database'][0]) ? $array['databases']['database'] : $array['databases'];
 
 		foreach ($tmp as $key => $value) {
-			$output = self::PREFIX . $value['@name'] . '.sql';
-			$output_str = self::SQL_COMMENT . self::SPACE_KEY . $this->__header_desc  . PHP_EOL;
+			$output = $this->__out_put_dir . self::PREFIX . $value['@name'] . '.sql';
+			$output_str = self::SQL_COMMENT . self::SPACE_KEY . self::VIM_HEADER . PHP_EOL;
 
 			$tmp_table = isset($value['tables']['table'][0]) ? $value['tables']['table'] : $value['tables'];
 			foreach ($tmp_table as $table) {
@@ -106,6 +120,56 @@ class sw_create_database
 
 			file_put_contents($output, $output_str);
 		}
+	}
+
+	// }}}
+	// {{{ public function set_filename()
+
+	/**
+	 * 设置文件名 
+	 * 
+	 * @param string $filename 
+	 * @access public
+	 * @return sw_create_database
+	 */
+	public function set_filename($filename)
+	{
+		if (!file_exists($filename)) {
+			require PATH_SWAN_LIB . 'sw_exception.class.php';
+			throw new sw_exception('database xml desc file not exists. ');	
+		}
+
+		if (!is_readable($filename)) {
+			require PATH_SWAN_LIB . 'sw_exception.class.php';
+			throw new sw_exception('database xml desc file not readable. ');	
+		}
+
+		$this->__xml_filename = $filename;
+
+		return $this;
+	}
+
+	// }}}
+	// {{{ public function set_dirname()
+
+	/**
+	 * 设置输出目录 
+	 * 
+	 * @param string $dirname
+	 * @access public
+	 * @return sw_create_database
+	 */
+	public function set_dirname($dirname)
+	{
+		if (!file_exists($dirname)) {
+			require PATH_SWAN_LIB . 'sw_exception.class.php';
+			throw new sw_exception('database output directory not exists. ');	
+		}
+
+		$dirname = rtrim($dirname, '/') . '/';
+		$this->__out_put_dir = $dirname;
+
+		return $this;
 	}
 
 	// }}}
@@ -198,44 +262,20 @@ class sw_create_database
 	 */
 	protected function _parse_key(array $key)
 	{
-
 		if ('primary' === $key['type']) {
 			$sql_str = "\t" . 'PRIMARY KEY' . self::SPACE_KEY . '(';
+		} else {
+			$sql_str = "\t" . 'KEY' . self::SQL_SIGN . $key['@name'] . self::SQL_SIGN . self::SPACE_KEY . '(';	
 		}
 
-
-		// `column_name` type (precision) 
-		$sql_str .= $column['type'] . '(' . $column['precision'] . ')' . self::SPACE_KEY;
-
-		// charset
-		if (isset($column['charset'])) {
-			$sql_str .= 'CHARACTER SET' . self::SPACE_KEY . $column['charset'] . self::SPACE_KEY;
+		$tmp_field = isset($key['fields']['field'][0]) ? $key['fields']['field'] : $key['fields'];
+		$tmp_sql_arr = array();
+		foreach ($tmp_field as $value) {
+			$tmp_sql_arr[] = self::SQL_SIGN . $value['@name'] . self::SQL_SIGN;
 		}
+		$sql_str .= implode(',', $tmp_sql_arr) . '),' . PHP_EOL;
 
-		// unsigned
-		if (isset($column['unsigned']) && 'true' === $column['unsigned']) {
-			$sql_str .= 'UNSIGNED' . self::SPACE_KEY;
-		}
-
-		// not null
-		if (isset($column['nullable']) && 'false' === $column['nullable']) {
-			$sql_str .= 'NOT NULL' . self::SPACE_KEY;
-		}
-
-		// auto
-		if (isset($column['auto']) && 'true' === $column['auto']) {
-			$sql_str .= 'AUTO_INCREMENT' . self::SPACE_KEY;
-		}
-
-		// default
-		if (isset($column['default']) && 'true' === $column['default']) {
-			$sql_str .= 'DEFAULT' . $column['default'];
-		}
-
-		$sql_str .= ',' . PHP_EOL;
-
-		// }}}
-		return array('sql' => $sql_str, 'desc' => $desc_str);
+		return $sql_str;
 	}
 
 	// }}}
@@ -254,11 +294,12 @@ class sw_create_database
 		$desc_str .= 'table' . self::SPACE_KEY . $table['@name'] . PHP_EOL;
 		$desc_str .= PHP_EOL . self::SQL_COMMENT . PHP_EOL . self::SQL_COMMENT . $table['desc'] . PHP_EOL;
 		$desc_str .= self::SQL_COMMENT . PHP_EOL;
-
-
+		
+		//建表语句
 		$sql_str = PHP_EOL . 'CREATE TABLE' . self::SPACE_KEY . self::SQL_SIGN . $table['@name'] . self::SQL_SIGN;
 		$sql_str .=  self::SPACE_KEY . '(' . PHP_EOL;
 
+		//生成字段语句
 		$tmp_column = isset($table['columns']['column'][0]) ? $table['columns']['column'] : $table['columns'];
 		foreach ($tmp_column as $key => $column) {
 			$return_arr = $this->_parse_column($column);	
@@ -266,8 +307,19 @@ class sw_create_database
 			$desc_str .= $return_arr['desc'];
 		}
 
-		$sql_str .= ')' . self::SPACE_KEY . 'ENGINE=' . $table['engine'] . self::SPACE_KEY;
-		$sql_str .= 'CHARACTER=' . $table['charset'] . ';' . PHP_EOL . PHP_EOL;
+		//生成主键和索引
+		$tmp_key = isset($table['keys']['key'][0]) ? $table['keys']['key'] : $table['keys'];
+		foreach ($tmp_key as $key) {
+			$sql_str .= $this->_parse_key($key);	
+		}
+
+		//去掉最后一个逗号
+		$sql_str = rtrim($sql_str, PHP_EOL);
+		$sql_str = rtrim($sql_str, ',');
+
+		//生成建表语句的结尾
+		$sql_str .= PHP_EOL . ')' . self::SPACE_KEY . 'ENGINE=' . $table['engine'] . self::SPACE_KEY;
+		$sql_str .= 'DEFAULT CHARSET=' . $table['charset'] . ';' . PHP_EOL . PHP_EOL;
 		$sql_str .= self::SQL_COMMENT . self::SPACE_KEY . self::FOLDING_SIGN_RIGHT;
 
 		return ($desc_str . $sql_str);
@@ -276,6 +328,3 @@ class sw_create_database
 	// }}}
 	// }}}
 }
-
-$test = new sw_create_database();
-$test->run();

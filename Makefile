@@ -1,6 +1,6 @@
 TARGET0 = /usr/local/dev_swan/
 
-SUBDIRS = src build_project env_tools
+SUBDIRS = env_tools build_project src
 INC_SRC0 = dev_core.php. .gitignore.
  
 INSTALL0 = /usr/bin/install -m 644 -o swan -g swan $< $(TARGET0)
