@@ -1,0 +1,200 @@
+#!/usr/local/swan/opt/php/bin/php
+<?php
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: */
+// +---------------------------------------------------------------------------
+// | SWAN [ $_SWANBR_SLOGAN_$ ]
+// +---------------------------------------------------------------------------
+// | Copyright $_SWANBR_COPYRIGHT_$
+// +---------------------------------------------------------------------------
+// | Version  $_SWANBR_VERSION_$
+// +---------------------------------------------------------------------------
+// | Licensed ( $_SWANBR_LICENSED_URL_$ )
+// +---------------------------------------------------------------------------
+// | $_SWANBR_WEB_DOMAIN_$
+// +---------------------------------------------------------------------------
+
+require_once 'dev_core.php';
+require_once D_PATH_SWAN_SOFT . 'core.php';
+require_once PATH_SWAN_LIB . 'sw_env_shell_const.class.php';
+/**
++------------------------------------------------------------------------------
+* build_shell_const 
++------------------------------------------------------------------------------
+* 
+* @package 
+* @version $_SWANBR_VERSION_$
+* @copyright $_SWANBR_COPYRIGHT_$
+* @author $_SWANBR_AUTHOR_$ 
++------------------------------------------------------------------------------
+*/
+class build_shell_const
+{
+	// {{{ members
+
+	/**
+	 * sw_env_shell_const对象 
+	 * 
+	 * @var sw_env_shell_const
+	 * @access protected
+	 */
+	protected $__const;
+	
+	// }}}	
+	// {{{ functions
+	// {{{ public function __construct()
+
+	/**
+	 * __construct 
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function __construct()
+	{
+		$this->__const = new sw_env_shell_const();	
+	}
+
+	// }}}
+	// {{{ public function run()
+
+	/**
+	 * 运行 
+	 * 
+	 * @access public
+	 * @return void
+	 */
+	public function run()
+	{
+		$string = '';
+		$string .= $this->_create_shell_path();	
+		$string .= $this->_create_status();	
+		$string .= $this->_create_restart_list();	
+		$string .= $this->_create_service_param();
+		
+		if (false === file_put_contents('./conf_global.sh', $string)) {
+			throw new Exception("create shell config file failed. ");	
+		}
+	}
+
+	// }}}
+	// {{{ protected function _create_shell_path()
+
+	/**
+	 * 创建所有的文件路劲 
+	 * 
+	 * @access protected
+	 * @return string
+	 */
+	protected function _create_shell_path()
+	{
+		$string = '';
+		$shell_path = $this->__const->get_shell_path();
+		if (!is_array($shell_path) || empty($shell_path)) {
+			throw new Exception('get shell path failed. ');
+		}
+
+		foreach ($shell_path as $key => $value) {
+			foreach ($value as $const_name => $const_value)	{
+				$string .= $const_name . '="' . $const_value . '"' . PHP_EOL;	
+			}
+		}
+		
+		return $string;
+	}
+
+	// }}}
+	// {{{ protected function _create_status()
+	
+	/**
+	 * 创建提示状态的信息 
+	 * 
+	 * @access protected
+	 * @return string
+	 */
+	protected function _create_status()
+	{
+		$string = '';	
+		$shell_status = $this->__const->get_status_string();
+
+		if (!is_array($shell_status) || empty($shell_status)) {
+			throw new Exception('get shell status failed. ');
+		}
+
+		foreach ($shell_status as $key => $value) {
+			$string .= $key . '="' . $value . '"' . PHP_EOL;	
+		} 
+		
+		return $string;
+	}
+
+	// }}}
+	// {{{ protected function _create_restart_list()
+
+	/**
+	 * 创建系统启动的列表 
+	 * 
+	 * @access protected
+	 * @return string
+	 */
+	protected function _create_restart_list()
+	{
+		$string = '';
+		$list = $this->__const->get_restart_list();
+		if (!is_array($list) || empty($list)) {
+			throw new Exception('get restart lists failed. ');
+		}
+
+		foreach ($list as $key => $value) {
+			$string .= strtoupper($key) . '_ARRAY="';
+			foreach ($value as $const_name => $const_value)	{
+				if ($const_value) {
+					$string .= $const_name . ' ';	
+				}
+			}
+			$string .=  '"' . PHP_EOL;
+		}
+		
+		return $string;
+			
+	}
+
+	// }}}
+	// {{{ protected function _create_service_param()
+
+	/**
+	 * 一些服务启动的参数
+	 * 
+	 * @access protected
+	 * @return string
+	 */
+	protected function _create_service_param()
+	{
+		$string = '';
+		$param = $this->__const->get_service_param();
+		if (!is_array($param) || empty($param)) {
+			throw new Exception('get service params failed. ');
+		}
+
+		if (isset($param['mysql']['port']) && isset($param['mysql']['timeout'])) {
+			$string .= 'PORT_MYSQL="' . $param['mysql']['port'] . '"' . PHP_EOL;
+			$string .= 'MYSQL_TIMEOUT="' . $param['mysql']['timeout'] . '"' . PHP_EOL;
+		}
+
+		if (isset($param['httpd']['port'])) {
+			$string .= 'PORT_HTTPD="' . $param['httpd']['port'] . '"' . PHP_EOL;	
+		}
+		
+		return $string;
+			
+	}
+
+	// }}}
+	// }}}
+}
+
+try {
+	$build = new build_shell_const();
+	$build->run();
+} catch (Exception $e) {
+	echo $e->getMessage() . PHP_EOL;	
+}

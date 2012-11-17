@@ -1,0 +1,345 @@
+#!/usr/local/swan/opt/php/bin/php
+<?php
+/* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: */
+// +---------------------------------------------------------------------------
+// | SWAN [ $_SWANBR_SLOGAN_$ ]
+// +---------------------------------------------------------------------------
+// | Copyright $_SWANBR_COPYRIGHT_$
+// +---------------------------------------------------------------------------
+// | Version  $_SWANBR_VERSION_$
+// +---------------------------------------------------------------------------
+// | Licensed ( $_SWANBR_LICENSED_URL_$ )
+// +---------------------------------------------------------------------------
+// | $_SWANBR_WEB_DOMAIN_$
+// +---------------------------------------------------------------------------
+ 
+require_once 'dev_core.php';
+require_once D_PATH_SWAN_SOFT . 'core.php';
+require_once D_PATH_SWAN_LIB . 'iterator/sw_iterator_fetch_dir.class.php';
+require_once PATH_SWAN_LIB . 'sw_env_shell_const.class.php';
+
+/**
++------------------------------------------------------------------------------
+* 建立SPEC描述文件呢 
++------------------------------------------------------------------------------
+* 
+* @package 
+* @version $_SWANBR_VERSION_$
+* @copyright $_SWANBR_COPYRIGHT_$
+* @author $_SWANBR_AUTHOR_$ 
++------------------------------------------------------------------------------
+*/
+class build_spec
+{
+	// {{{ members
+	
+	/**
+	 * 生成SPEC文件配置 
+	 * 
+	 * @var array
+	 * @access protected
+	 */
+	protected $__spec_info = array(
+		'Summary'		=> 'swansoft beta',
+		'Name'			=> SWAN_SOFTNAME,
+		'Version'		=> SWAN_VERSION,
+		'Release'		=> SWANBR_RELEASE,
+		'Group'			=> 'Development/Tools',
+		'License'		=> SWANBR_LICENSED_URL,
+		'URL'			=> SWANBR_WEB_DOMAIN,
+		'Vendor'		=> SWANBR_AUTHOR,
+		'Packager'		=> 'nmred <nmred_2008@126.com>',
+		'Distribution'	=> 'Open source Project',
+	);
+
+	/**
+	 * 描述文件中所有段 
+	 * 
+	 * @var array
+	 * @access protected
+	 */
+	protected $__sections = array(
+		'description' => true,
+		'prep'        => true,
+		'build'       => true,
+		'pre'         => true,
+		'install'     => true,
+		'post'        => true,
+		'files'       => true,
+		'changelog'   => true,
+	);
+
+	/**
+	 * 软件描述 
+	 * 
+	 * @var string
+	 * @access protected
+	 */
+	protected $__description = '';
+
+	/**
+	 * 软件预处理 
+	 * 
+	 * @var string
+	 * @access protected
+	 */
+	protected $__prep; 
+
+	/**
+	 * 预处理宏 
+	 * 
+	 * @var string
+	 * @access protected
+	 */
+	protected $__setup;
+
+	/**
+	 * 软件构建相关处理 
+	 * 
+	 * @var mixed
+	 * @access protected
+	 */
+	protected $__build;
+
+	/**
+	 * 安装相关处理 
+	 * 
+	 * @var mixed
+	 * @access protected
+	 */
+	protected $__install;
+
+	/**
+	 * 需要打包进去的文件列表 
+	 * 
+	 * @var mixed
+	 * @access protected
+	 */
+	protected $__files;
+
+	/**
+	 * 软件修改日志 
+	 * 
+	 * @var mixed
+	 * @access protected
+	 */
+	protected $__changelog;
+
+	// }}}
+	// {{{ functions
+	// {{{ public function __construct()
+
+	public function __construct()
+	{
+		$this->__spec_info['Source'] = '/home/hzx/rpmbuild/' . SWAN_SOFTNAME . '-' . SWAN_VERSION . '.tar';	
+	}
+
+	// }}}
+	// {{{ public function run()
+
+	public function run()
+	{
+		$string = '';
+		foreach ($this->__spec_info as $key => $value) {
+			$string .= $key . ':' . $value . PHP_EOL;
+		}
+
+		foreach ($this->__sections as $key => $value) {
+			if (false !== $this->__sections[$key]) {
+				$string .= '%' . $key . PHP_EOL;
+				$function_name = '_set_' . $key;
+				$string .= $this->$function_name();
+				$string .= PHP_EOL;
+			}
+		}
+		
+		$spec_name = SWAN_SOFTNAME . '-' . SWAN_VERSION . '.spec';
+		if (false === file_put_contents($spec_name, $string)) {
+			throw new Exception('create spec failed. ');	
+		}
+	}
+
+	// }}}
+	// {{{ protected function _get_root_dir()
+
+	/**
+	 * 获取需要打包的软件根目录 
+	 * 
+	 * @access protected
+	 * @return string
+	 */
+	protected function _get_root_dir()
+	{
+		$env_const = new sw_env_shell_const();
+		$soft_root = $env_const->get_const('INSTALL_SOFT');
+		return $soft_root;	
+	}
+
+	// }}}
+	// {{{ protected function _set_description()
+		
+	/**
+	 * 设置软件描述信息 
+	 * 
+	 * @access protected
+	 * @return string
+	 */
+	protected function _set_description()
+	{
+		$description  = '-------------------------------------' . PHP_EOL;
+		$description .= '- ' . SWANBR_SLOGAN . ' -' . PHP_EOL;
+		$description .= '-------------------------------------' . PHP_EOL;
+		return $description;
+	}
+
+	// }}}
+	// {{{ protected function _set_prep()
+		
+	/**
+	 * 设置预处理信息 
+	 * 
+	 * @access protected
+	 * @return string
+	 */
+	protected function _set_prep()
+	{
+		$string = '%setup -q';
+		return $string;	
+	}
+
+	// }}}
+	// {{{ protected function _set_build()
+		
+	/**
+	 * 设置软件构建信息 
+	 * 
+	 * @access protected
+	 * @return string
+	 */
+	protected function _set_build()
+	{
+		return '';	
+	}
+
+	// }}}
+	// {{{ protected function _set_pre()
+		
+	/**
+	 * 设置软件安装前执行的命令
+	 * 
+	 * @access protected
+	 * @return string
+	 */
+	protected function _set_pre()
+	{
+		$post_str = '';
+		$post_str .= 'echo "       ╭═════════════════════════════════════════════╮"' . PHP_EOL;
+		$post_str .= 'echo "       ║                                             ║"' . PHP_EOL;
+		$post_str .= 'echo "       ║    ' . SWANBR_SLOGAN . '        ║"' . PHP_EOL;
+		$post_str .= 'echo "       ║                                             ║"' . PHP_EOL;
+		$post_str .= 'echo "       ╰═════════════════════════════════════════════╯"' . PHP_EOL;
+		$post_str .= 'echo "================================================================"' . PHP_EOL;
+		$post_str .= 'if grep -q swan /etc/passwd' . PHP_EOL;
+		$post_str .= 'then' . PHP_EOL;
+		$post_str .= 'echo "Notice: Run this soft will use swan user"' . PHP_EOL;
+		$post_str .= 'else' . PHP_EOL;
+		$post_str .= 'sudo adduser swan -s /sbin/nologin' . PHP_EOL;
+		$post_str .= 'fi' . PHP_EOL;
+		return $post_str;	
+	}
+
+	// }}}
+	// {{{ protected function _set_install()
+		
+	/**
+	 * 设置软件安装处理信息 
+	 * 
+	 * @access protected
+	 * @return string
+	 */
+	protected function _set_install()
+	{
+		$install_str = '';
+		$soft_root = $this->_get_root_dir();
+		//除了/usr/local/swan/opt(LAMP环境)其他目录清除
+		if (!file_exists($soft_root)) {
+			throw new Exception('soft diritory not exists. ');	
+		}
+
+		$dir_iterator = new sw_iterator_fetch_dir($soft_root);
+		$dir_iterator->set_ignore_dir(array('opt/.', 'run/.'));
+		foreach ($dir_iterator as $file_path => $value) {
+			$file_path = trim($file_path, '/.');
+			if ($value->isDir() 
+				&& $file_path !== ''
+				&& (false === strpos($file_path, '/'))) {
+				$install_str .= 'sudo rm -rf ' . $soft_root . '/' . rtrim($file_path, '/.') . PHP_EOL;
+			}
+		}
+		$install_str .= 'sudo rm -rf ' . $soft_root . '/opt/mysql/mysql-test/' . PHP_EOL;
+			
+		//MAKE INSTALL swansoft仓库代码
+		$install_str .= 'sudo make install' . PHP_EOL;
+		return $install_str;	
+	}
+
+	// }}}
+	// {{{ protected function _set_post()
+		
+	/**
+	 * 设置软件安装完成后执行的命令
+	 * 
+	 * @access protected
+	 * @return string
+	 */
+	protected function _set_post()
+	{
+		$post_str = '';
+		$post_str .= 'sudo touch ' . $this->_get_root_dir() . '/logs/mysql.sock' . PHP_EOL;
+		return $post_str;	
+	}
+
+	// }}}
+	// {{{ protected function _set_files()
+		
+	/**
+	 * 设置软件打包文件
+	 * 
+	 * @access protected
+	 * @return string
+	 */
+	protected function _set_files()
+	{
+		// 主要软件包根路径
+		$string = '%defattr(-,swan,swan)' . PHP_EOL;
+		$string .= $this->_get_root_dir();
+		
+		// 处理个别特殊的，例如/usr/bin/目录下的命令工具
+		return $string;	
+	}
+
+	// }}}
+	// {{{ protected function _set_changelog()
+		
+	/**
+	 * 设置软件更新信息
+	 * 
+	 * @access protected
+	 * @return string
+	 */
+	protected function _set_changelog()
+	{
+		$string = '*' . date('D M d Y',time()) . ' ' . strtoupper(SWANBR_AUTHOR) . PHP_EOL;
+		$string .= '+ ';
+		$string .= '修正安装时当sawn用户已经存在时出错的bug'; 
+		$string .= PHP_EOL . '+ ';
+		$string .= '修正安装后数据库不能正常启动的情况'; 
+		return $string;
+	}
+
+	// }}}
+	// }}}
+}
+
+$test = new build_spec();
+$test->run();
