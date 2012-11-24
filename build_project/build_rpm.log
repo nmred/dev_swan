@@ -1,0 +1,10 @@
+2012-11-18
++ 修正开发环境中php没有mysql相关的模块的bug
++ 修正LIB中validate对外的调用工厂
++ 添加开发环境中添加pcntl扩展
++ LIB中添加控制器模块
++ LIB中添加SNMP模块
++ LIB中添加DAEMON模块
+
+2012-11-24
++ 修正开发环境中缺少pdo-mysql模块的bug

@@ -330,10 +330,7 @@ class build_spec
 	protected function _set_changelog()
 	{
 		$string = '*' . date('D M d Y',time()) . ' ' . strtoupper(SWANBR_AUTHOR) . PHP_EOL;
-		$string .= '+ ';
-		$string .= '修正安装时当sawn用户已经存在时出错的bug'; 
-		$string .= PHP_EOL . '+ ';
-		$string .= '修正安装后数据库不能正常启动的情况'; 
+		$string .= PHP_EOL . '+ 修正开发环境中php没有pdo-mysql相关的模块的bug';
 		return $string;
 	}
 

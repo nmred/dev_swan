@@ -722,6 +722,7 @@ function install_php()
 		--with-config-file-path=$ETC_DIR \
 		--enable-maintainer-zts \
 		--enable-pthreads \
+		--with-pdo-mysql=$INSTALL_MYSQL \
 		--with-mysql=$INSTALL_MYSQL \
 		--with-apxs2=$INSTALL_HTTPD/bin/apxs \
 		--enable-ftp \
