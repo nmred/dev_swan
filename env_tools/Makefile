@@ -1,19 +1,19 @@
 TARGET0 = /root/
 
 SUBDIRS = .vim
-INC_SRC0 = .gitconfig. .git-completion.bash. .bashrc. .vimrc.
+INC_SRC0 = .vimrc. .bashrc. .gitconfig. .git-completion.bash.
  
 INSTALL0 = /usr/bin/install -m 644 -o root -g root $< $(TARGET0)
 
 
 all:
-.gitconfig.: .gitconfig
-	$(INSTALL0)
-.git-completion.bash.: .git-completion.bash
+.vimrc.: .vimrc
 	$(INSTALL0)
 .bashrc.: .bashrc
 	$(INSTALL0)
-.vimrc.: .vimrc
+.gitconfig.: .gitconfig
+	$(INSTALL0)
+.git-completion.bash.: .git-completion.bash
 	$(INSTALL0)
 
 

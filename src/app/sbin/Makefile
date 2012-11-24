@@ -2,6 +2,7 @@ TARGET0 = /usr/local/dev_swan/app/sbin/
 TARGET1 = /usr/bin/
 
 SUBDIRS = 
+INC_SRC0 = create_database.
 INC_SRC1 = jjcm.
  
 INSTALL0 = /usr/bin/install -m 755 -o swan -g swan $< $(TARGET0)
@@ -9,6 +10,8 @@ INSTALL1 = /usr/bin/install -m 755 -o swan -g swan $< $(TARGET1)
 
 
 all:
+create_database.: create_database
+	$(INSTALL0)
 jjcm.: jjcm
 	$(INSTALL1)
 
@@ -35,5 +38,5 @@ make_dir1:
 	fi;
 
 
-install: make_dir1 $(INC_SRC1) 	
+install: make_dir0 make_dir1 $(INC_SRC0) $(INC_SRC1) 	
 	@$(INS_DIRS)

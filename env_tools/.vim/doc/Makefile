@@ -1,17 +1,17 @@
 TARGET0 = /root/.vim/doc/
 
 SUBDIRS = 
-INC_SRC0 = taglist.txt. NERD_tree.txt. NERD_commenter.txt.
+INC_SRC0 = NERD_tree.txt. NERD_commenter.txt. taglist.txt.
  
 INSTALL0 = /usr/bin/install -m 644 -o root -g root $< $(TARGET0)
 
 
 all:
-taglist.txt.: taglist.txt
-	$(INSTALL0)
 NERD_tree.txt.: NERD_tree.txt
 	$(INSTALL0)
 NERD_commenter.txt.: NERD_commenter.txt
+	$(INSTALL0)
+taglist.txt.: taglist.txt
 	$(INSTALL0)
 
 
