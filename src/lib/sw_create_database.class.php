@@ -226,8 +226,8 @@ class sw_create_database
 		}
 
 		// default
-		if (isset($column['default']) && 'true' === $column['default']) {
-			$sql_str .= 'DEFAULT' . $column['default'];
+		if (isset($column['default']) && '' !== $column['default']) {
+			$sql_str .= 'DEFAULT' . self::SPACE_KEY . '\'' . $column['default'] . '\'';
 		}
 
 		$sql_str .= ',' . PHP_EOL;
