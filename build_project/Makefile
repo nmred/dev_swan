@@ -2,7 +2,7 @@ TARGET0 = /usr/local/dev_swan/app/sbin/lamp_install/
 TARGET1 = /usr/local/dev_swan/app/sbin/lamp_install/
 
 SUBDIRS = 
-INC_SRC0 = build_tar. install_swan. swan_uninstall. build_spec. macros. build_shell_const. conf_global.sh.
+INC_SRC0 = build_tar. build_rpm.log. install_swan. swan_uninstall. build_spec. macros. build_shell_const. conf_global.sh.
  
 INSTALL0 = /usr/bin/install -m 755 -o root -g root $< $(TARGET0)
 INSTALL1 = /usr/bin/install -m 644 -o root -g root $< $(TARGET1)
@@ -10,6 +10,8 @@ INSTALL1 = /usr/bin/install -m 644 -o root -g root $< $(TARGET1)
 
 all:
 build_tar.: build_tar
+	$(INSTALL0)
+build_rpm.log.: build_rpm.log
 	$(INSTALL0)
 install_swan.: install_swan
 	$(INSTALL0)

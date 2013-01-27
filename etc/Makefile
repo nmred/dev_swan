@@ -1,15 +1,13 @@
-TARGET0 = /usr/local/dev_swan/
+TARGET0 = /usr/local/swan/opt/etc
 
-SUBDIRS = env_tools build_project etc src
-INC_SRC0 = dev_core.php. .gitignore.
+SUBDIRS = extra
+INC_SRC0 = httpd.conf.
  
 INSTALL0 = /usr/bin/install -m 644 -o swan -g swan $< $(TARGET0)
 
 
 all:
-dev_core.php.: dev_core.php
-	$(INSTALL0)
-.gitignore.: .gitignore
+httpd.conf.: httpd.conf
 	$(INSTALL0)
 
 

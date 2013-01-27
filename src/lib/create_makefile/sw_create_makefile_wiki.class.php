@@ -11,6 +11,8 @@
 // +---------------------------------------------------------------------------
 // | $_SWANBR_WEB_DOMAIN_$
 // +---------------------------------------------------------------------------
+
+require_once D_PATH_SWAN_LIB . 'create_makefile/sw_create_makefile_base.class.php';
  
 /**
 +------------------------------------------------------------------------------
@@ -23,35 +25,31 @@
 * @author $_SWANBR_AUTHOR_$ 
 +------------------------------------------------------------------------------
 */
-class sw_create_makefile
+class sw_create_makefile_wiki extends sw_create_makefile_base
 {
 	// {{{ functions
-	// {{{ public static function factory()
-	
+	// {{{ protected function _get_rule_src()
+
 	/**
-	 * factory 
+	 * 返回 make 的规则
 	 * 
-	 * @param mixed $type 
-	 * @param array $options 
-	 * @static
-	 * @access public
-	 * @return void
+	 * @param array $file_names
+	 * @param int $id  make类型id 对应配置文件中的 # 
+	 * @access protected
+	 * @return string
 	 */
-	public static function factory($type = 'common')
+	protected function _get_rule_src($file_names, $id)
 	{
-		$class_name = 'sw_create_makefile_' .  $type;
-
-		if (!class_exists($class_name)) {
-			require_once D_PATH_SWAN_LIB . 'create_makefile/' . $class_name . '.class.php';	
+		$rule = '';
+		foreach ($file_names as $file_name) {
+			$real_file_name = substr($file_name, 0, strlen($file_name) - 1);
+			$rule .= $file_name . ': ' . $real_file_name . "\n";
+			$rule .= "\t" . '/usr/bin/install -m 644 -o swan -g swan $< $(TARGET' . $id . ')/' . urlencode($real_file_name) . "\n";
 		}
 
-		if (!class_exists($class_name)) {
-			throw new Exception("can not load $class_name");	
-		}
-
-		return new $class_name();
+		return $rule;
 	}
-	 
+
 	// }}}
 	// }}}
 }

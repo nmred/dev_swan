@@ -1,6 +1,6 @@
 TARGET0 = /usr/local/dev_swan/lib/
 
-SUBDIRS = iterator
+SUBDIRS = iterator create_makefile
 INC_SRC0 = sw_create_database.class.php. sw_create_makefile.class.php.
  
 INSTALL0 = /usr/bin/install -m 644 -o swan -g swan $< $(TARGET0)

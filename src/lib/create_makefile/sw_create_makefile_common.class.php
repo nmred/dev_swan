@@ -11,7 +11,9 @@
 // +---------------------------------------------------------------------------
 // | $_SWANBR_WEB_DOMAIN_$
 // +---------------------------------------------------------------------------
- 
+
+require_once D_PATH_SWAN_LIB . 'create_makefile/sw_create_makefile_base.class.php';
+   
 /**
 +------------------------------------------------------------------------------
 * 自动生成Makefile文件LIB库 
@@ -23,35 +25,8 @@
 * @author $_SWANBR_AUTHOR_$ 
 +------------------------------------------------------------------------------
 */
-class sw_create_makefile
+class sw_create_makefile_common extends sw_create_makefile_base
 {
 	// {{{ functions
-	// {{{ public static function factory()
-	
-	/**
-	 * factory 
-	 * 
-	 * @param mixed $type 
-	 * @param array $options 
-	 * @static
-	 * @access public
-	 * @return void
-	 */
-	public static function factory($type = 'common')
-	{
-		$class_name = 'sw_create_makefile_' .  $type;
-
-		if (!class_exists($class_name)) {
-			require_once D_PATH_SWAN_LIB . 'create_makefile/' . $class_name . '.class.php';	
-		}
-
-		if (!class_exists($class_name)) {
-			throw new Exception("can not load $class_name");	
-		}
-
-		return new $class_name();
-	}
-	 
-	// }}}
 	// }}}
 }

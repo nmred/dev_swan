@@ -270,3 +270,10 @@ let g:ctags_args=1
 " }}}
 hi Comment ctermfg=0
 hi Comment cterm=bold
+" {{{ cmd
+command XC !gcc -o %.o % && ./%.o
+command ZC !gcc -o %.o %
+command Mk !make %.
+" }}}
+
+

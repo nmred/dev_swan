@@ -4,7 +4,7 @@ require_once 'dev_core.php';
 
 require_once D_PATH_SWAN_LIB . 'sw_create_makefile.class.php'; 
 try {
-	$create_makefile = new sw_create_makefile();
+	$create_makefile = sw_create_makefile::factory('common');
 	$create_makefile->run();	
 } catch (Exception $e) {
 	echo $e->getMessage() . PHP_EOL;	
