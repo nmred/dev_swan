@@ -2,7 +2,7 @@ TARGET0 = /usr/local/dev_swan/app/sbin/
 TARGET1 = /usr/bin/
 
 SUBDIRS = 
-INC_SRC0 = create_database. .create_database_wiki.swp. create_database_wiki.
+INC_SRC0 = create_database. create_database_wiki.
 INC_SRC1 = jjcm.
  
 INSTALL0 = /usr/bin/install -m 755 -o swan -g swan $< $(TARGET0)
