@@ -1,6 +1,6 @@
 TARGET0 = /root/.vim/
 
-SUBDIRS = plugin nerdtree_plugin syntax doc
+SUBDIRS = plugin syntax nerdtree_plugin doc
  
 INSTALL0 = /usr/bin/install -m 644 -o root -g root $< $(TARGET0)
 

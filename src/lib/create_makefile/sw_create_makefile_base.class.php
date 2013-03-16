@@ -154,6 +154,23 @@ abstract class sw_create_makefile_base
 	}
 
 	// }}}
+	// {{{ public funciton set_root_dir()
+
+	/**
+	 * 设置根目录
+	 * 
+	 * @param string $dir_name 
+	 * @access public
+	 * @return void
+	 */
+	public function set_root_dir($dir_name)
+	{
+		$dir_name = rtrim($dir_name, '/') . '/';
+		$this->__target_root_dir = $dir_name;
+		return $this;
+	}
+
+	// }}}
 	// {{{ protected function _parse_ini()
 	
 	/**

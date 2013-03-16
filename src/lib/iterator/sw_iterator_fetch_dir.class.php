@@ -100,8 +100,8 @@ class sw_iterator_fetch_dir extends RecursiveIteratorIterator
 		while (parent::valid() 
 			&& (isset($this->__ignore_files[$sub_path]) 
 				|| isset($this->__self_ignore_dir[$sub_path . '/.']))) {
-			$sub_path = $this->getSubPathname();
 			parent::next();
+			$sub_path = $this->getSubPathname();
 		}
 		return parent::current();
 	}

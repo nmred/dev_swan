@@ -91,7 +91,7 @@ class configure
 			$path_all = rtrim($this->__root_dir, '/') . '/' .  $dir_name;
 			chdir($path_all);
 			$make_file = sw_create_makefile::factory('common');
-			$make_file->run();
+			$make_file->set_root_dir('/usr/local/dev_swan/')->run();
 			chdir($current_dir);
 		}
 	}

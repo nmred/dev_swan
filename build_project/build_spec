@@ -50,6 +50,10 @@ class build_spec
 		'Vendor'		=> SWANBR_AUTHOR,
 		'Packager'		=> 'nmred <nmred_2008@126.com>',
 		'Distribution'	=> 'Open source Project',
+		'Source'        => '%{name}-%{version}.tar',
+		'Buildroot'     => '%{_tmppath}/%{name}-%{version}-root',
+		'Prefix'        => '/usr/local/swan',
+		'Requires'      => 'chkconfig, sudo',
 	);
 
 	/**
@@ -64,6 +68,7 @@ class build_spec
 		'build'       => true,
 		'pre'         => true,
 		'install'     => true,
+		'clean'       => true,
 		'post'        => true,
 		'files'       => true,
 		'changelog'   => true,
@@ -110,6 +115,14 @@ class build_spec
 	protected $__install;
 
 	/**
+	 * 清理相关处理 
+	 * 
+	 * @var mixed
+	 * @access protected
+	 */
+	protected $__clean;
+
+	/**
 	 * 需要打包进去的文件列表 
 	 * 
 	 * @var mixed
@@ -131,7 +144,6 @@ class build_spec
 
 	public function __construct()
 	{
-		$this->__spec_info['Source'] = '/home/hzx/rpmbuild/' . SWAN_SOFTNAME . '-' . SWAN_VERSION . '.tar';	
 	}
 
 	// }}}
@@ -260,27 +272,28 @@ class build_spec
 	protected function _set_install()
 	{
 		$install_str = '';
-		$soft_root = $this->_get_root_dir();
-		//除了/usr/local/swan/opt(LAMP环境)其他目录清除
-		if (!file_exists($soft_root)) {
-			throw new Exception('soft diritory not exists. ');	
-		}
+		$install_str .= 'rm -rf $RPM_BUILD_ROOT' . PHP_EOL;
+		$install_str .= 'mkdir -p $RPM_BUILD_ROOT%{prefix}' . PHP_EOL;
+		$install_str .= 'cp -r * $RPM_BUILD_ROOT%{prefix}' .PHP_EOL;
 
-		$dir_iterator = new sw_iterator_fetch_dir($soft_root);
-		$dir_iterator->set_ignore_dir(array('opt/.', 'run/.'));
-		foreach ($dir_iterator as $file_path => $value) {
-			$file_path = trim($file_path, '/.');
-			if ($value->isDir() 
-				&& $file_path !== ''
-				&& (false === strpos($file_path, '/'))) {
-				$install_str .= 'sudo rm -rf ' . $soft_root . '/' . rtrim($file_path, '/.') . PHP_EOL;
-			}
-		}
-		$install_str .= 'sudo rm -rf ' . $soft_root . '/opt/mysql/mysql-test/' . PHP_EOL;
-			
-		//MAKE INSTALL swansoft仓库代码
-		$install_str .= 'sudo make install' . PHP_EOL;
-		return $install_str;	
+		return $install_str;
+	}
+
+	// }}}
+	// {{{ protected function _set_clean()
+		
+	/**
+	 * 设置软件清理信息处理信息 
+	 * 
+	 * @access protected
+	 * @return string
+	 */
+	protected function _set_clean()
+	{
+		$clean_str = '';
+		$clean_str .= 'rm -rf $RPM_BUILD_ROOT' . PHP_EOL;
+
+		return $clean_str;
 	}
 
 	// }}}
@@ -295,7 +308,6 @@ class build_spec
 	protected function _set_post()
 	{
 		$post_str = '';
-		$post_str .= 'sudo touch ' . $this->_get_root_dir() . '/logs/mysql.sock' . PHP_EOL;
 		return $post_str;	
 	}
 
@@ -310,11 +322,7 @@ class build_spec
 	 */
 	protected function _set_files()
 	{
-		// 主要软件包根路径
-		$string = '%defattr(-,swan,swan)' . PHP_EOL;
-		$string .= $this->_get_root_dir();
-		
-		// 处理个别特殊的，例如/usr/bin/目录下的命令工具
+		$string = '%{prefix}' . PHP_EOL;
 		return $string;	
 	}
 

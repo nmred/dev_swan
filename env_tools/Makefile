@@ -1,19 +1,19 @@
-TARGET0 = /root/
+TARGET0 = /root
 
 SUBDIRS = .vim
-INC_SRC0 = .vimrc. .git-completion.bash. .gitconfig. .bashrc.
+INC_SRC0 = .vimrc. .bashrc. .git-completion.bash. .gitconfig.
  
-INSTALL0 = /usr/bin/install -m 644 -o root -g root $< $(TARGET0)
+INSTALL0 = /usr/bin/install -m 644 -o swan -g swan $< $(TARGET0)
 
 
 all:
 .vimrc.: .vimrc
 	$(INSTALL0)
+.bashrc.: .bashrc
+	$(INSTALL0)
 .git-completion.bash.: .git-completion.bash
 	$(INSTALL0)
 .gitconfig.: .gitconfig
-	$(INSTALL0)
-.bashrc.: .bashrc
 	$(INSTALL0)
 
 
@@ -29,7 +29,7 @@ make_dir0:
 	-@if test ! -d $(TARGET0); then \
 	echo "Make Dir:  $(TARGET0)"; \
 	mkdir -m 755 $(TARGET0); \
-	chown root:root $(TARGET0); \
+	chown swan:swan $(TARGET0); \
 	fi;
 
 
