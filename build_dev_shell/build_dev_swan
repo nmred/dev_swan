@@ -1,0 +1,594 @@
+#!/bin/sh
+# vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: #
+# +---------------------------------------------------------------------------
+# | SWAN [ $_SWANBR_SLOGAN_$ ]
+# +---------------------------------------------------------------------------
+# | Copyright $_SWANBR_COPYRIGHT_$
+# +---------------------------------------------------------------------------
+# | Version  $_SWANBR_VERSION_$
+# +---------------------------------------------------------------------------
+# | Licensed ( $_SWANBR_LICENSED_URL_$ )
+# +---------------------------------------------------------------------------
+# | $_SWANBR_WEB_DOMAIN_$
+# +---------------------------------------------------------------------------
+#  编译开发环境 dev_swan
+
+############################
+# 相关配置项   #############
+############################
+CUR_PWD="`pwd`"
+TMP_DIR="/tmp/swan/"
+OPENSOURCE="/usr/local/swan_open/"
+
+#将 环境编译到临时目录中
+INSTALL_DIR="/usr/local/dev_swan/opt"
+
+############################
+#          函数        #####
+############################
+
+# {{{ check_return_exit()
+
+check_return_exit ()
+{
+    if ! test 0 = $?; then
+        echo -e "\n!!!!!!!!!! Error, this script will exit !!!!!!!!!!\n"
+        exit 1
+    fi
+}
+
+# }}}
+# {{{ function sw_mkdir()
+
+############################
+# 创建目录 #################
+############################
+function sw_mkdir()
+{
+	echo "create $1 directory ...";
+	if [ -d $1 ] ;then
+		echo "directory $1 already exists. " 
+	else
+		mkdir -p $1
+		check_return_exit
+	fi
+}
+
+# }}} 
+# {{{ function sw_tar_all() 
+
+############################
+# 通过tar解压文件 ##########
+############################
+function sw_tar_all()
+{
+	files=`ls $OPENSOURCE | grep .tar.gz`
+	for file in $files
+	do
+		if [ -d $TMP_DIR/`echo $file | sed 's/.tar.gz//'` ] ; then
+			echo "$file already extract ."
+			continue
+		fi
+		echo "start extract  $file ...";
+		tar -zxf $OPENSOURCE$file -C $TMP_DIR
+		check_return_exit
+	done	
+}
+
+ # }}}
+# {{{ function sw_unzip_all()
+
+############################
+# 通过unzip解压文件 ########
+############################
+function sw_unzip_all()
+{
+	files=`ls $OPENSOURCE | grep .zip`
+	for file in $files
+	do
+		if [ -d $TMP_DIR/`echo $file | sed 's/.zip//'` ] ; then
+			echo "$file already unzip ."
+			continue
+		fi
+		echo "start unzip $file ..."
+		unzip $OPENSOURCE$file -d $TMP_DIR >/dev/null 2>&1
+		check_return_exit
+	done	
+}
+
+ # }}}
+
+############################
+#  安装编译前的预处理 ######
+############################
+# {{{ function sw_pre_install()
+
+function sw_pre_install()
+{
+	if [ -d $TMP_DIR ]; then
+		echo "remove $TMP_DIR ..."
+		rm -rf $TMP_DIR
+		check_return_exit
+	fi
+	if [ -d $INSTALL_DIR ]; then
+		echo "remove $INSTALL_DIR ..."
+		rm -rf $INSTALL_DIR
+		check_return_exit
+	fi
+	echo "build install directory | extract soucre file ..."
+		
+	#创建安装目录
+	sw_mkdir $INSTALL_DIR
+	sw_mkdir $INSTALL_HTTPD
+	sw_mkdir $INSTALL_PHP
+	sw_mkdir $INSTALL_MYSQL
+	sw_mkdir $TMP_DIR
+	sw_mkdir $ETC_DIR
+
+	sw_tar_all
+	sw_unzip_all
+}
+
+# }}}
+
+#sw_pre_install
+
+# 软件的源文件
+SRC_RRDTOOL="$TMP_DIR/`ls $TMP_DIR |grep rrdtool`"
+SRC_HTTPD="$TMP_DIR/`ls $TMP_DIR |grep httpd`"
+SRC_PCRE="$TMP_DIR/`ls $TMP_DIR |grep pcre`"
+SRC_APR="$TMP_DIR/`ls  $TMP_DIR|grep apr-[0-9].*`"
+SRC_APR_UTIL="$TMP_DIR/`ls $TMP_DIR|grep apr-util`"
+SRC_MYSQL="$TMP_DIR/`ls $TMP_DIR |grep mysql`"
+SRC_PHP="$TMP_DIR/`ls $TMP_DIR |grep php`"
+SRC_JPEG="$TMP_DIR/`ls $TMP_DIR |grep jpeg`"
+SRC_LIBPNG="$TMP_DIR/`ls $TMP_DIR |grep libpng`"
+SRC_FREETYPE="$TMP_DIR/`ls $TMP_DIR |grep freetype`"
+SRC_ZLIB="$TMP_DIR/`ls $TMP_DIR |grep zlib`"
+SRC_GD="$TMP_DIR/`ls $TMP_DIR |grep gd`"
+SRC_LIBXML="$TMP_DIR/`ls $TMP_DIR |grep libxml`"
+SRC_PTHREADS="$TMP_DIR/`ls $TMP_DIR |grep pthreads`"
+
+INSTALL_HTTPD="$INSTALL_DIR/apache2"
+INSTALL_APR="$SRC_HTTPD/srclib/apr"
+INSTALL_APR_UTIL="$SRC_HTTPD/srclib/apr-util"
+INSTALL_PCRE="$INSTALL_HTTPD/pcre"
+INSTALL_PHP="$INSTALL_DIR/php"
+INSTALL_MYSQL="$INSTALL_DIR/mysql"
+INSTALL_JPEG="$INSTALL_PHP/jpeg"
+INSTALL_LIBPNG="/usr/local/libpng"
+INSTALL_FREETYPE="$INSTALL_PHP/freetype"
+INSTALL_ZLIB="$INSTALL_PHP/zlib"
+INSTALL_GD="$INSTALL_PHP/gd"
+INSTALL_LIBXML="$INSTALL_PHP/libxml"
+INSTALL_EXT="$INSTALL_PHP/ext"
+ETC_DIR="$INSTALL_DIR/etc"
+MYSQL_DATA="$INSTALL_DIR/data/mysql"
+RRDTOOL="$INSTALL_DIR/rrdtool"
+INATLL_LOG="$INSTALL_DIR/install.log"
+
+############################
+# 必要检查函数库       #####
+############################
+# {{{ function check_libtool()
+
+function check_libtool()
+{
+	is_exists=`rpm -q libtool | wc -l`
+	if [ "$is_exists" -lt "1" ];then
+		echo "libtool not install . [FAIL]"
+		exit 1
+	fi		
+}
+
+# }}}
+# {{{ function check_gccadd()
+
+function check_gccadd()
+{
+	is_exists=`rpm -q gcc-c++ | wc -l`
+	if [ "$is_exists" -lt "1" ];then
+		echo "gcc-c++ not install . [FAIL]"
+		exit 1
+	fi		
+}
+
+# }}}
+
+# {{{ install httpd
+# {{{ function install_httpd()
+
+############################
+# 安装httpd程序  ###########
+############################
+function install_httpd()
+{
+	# {{{安装pcre的源码到httpd的安装目录
+	echo ""
+	echo "start install httpd ..."
+	echo "perpare install httpd ..."
+
+	check_libtool
+	check_gccadd
+
+	#切换目录
+	cd $SRC_PCRE
+	check_return_exit
+
+	echo "start configure pcre ..."
+	CMD="./configure --prefix=$INSTALL_PCRE"
+	echo $CMD
+	eval $CMD
+
+	echo "make pcre start ..."
+	make
+	check_return_exit
+	make install 
+	check_return_exit
+	
+	cd $CUR_PWD
+	# }}}
+	# {{{导入apr和apr-utli依赖包
+	if [ -d $INSTALL_APR ]; then
+		echo "already copy apr source ..."
+	else
+		echo "copy apr start ..."
+		cp -rf $SRC_APR $INSTALL_APR
+		check_return_exit
+	fi
+
+	if [ -d $INSTALL_APR_UTIL ]; then
+		echo "already copy apr-util source ..."
+	else
+		echo "copy apr-util start ..."
+		cp -rf $SRC_APR_UTIL  $INSTALL_APR_UTIL
+		check_return_exit
+	fi
+	# }}}
+	# {{{ configre && make &&  make install
+	echo "start install httpd ..."
+	cd $SRC_HTTPD
+	check_return_exit
+
+	echo "httpd configre start ..."
+	CMD="
+	./configure \
+		--prefix=$INSTALL_HTTPD  \
+		--sysconfdir=$ETC_DIR \
+		--with-included-apr \
+		--enable-so \
+		--enable-deflate=shared \
+		--enable-expires=shared \
+		--enable-rewrite=shared \
+		--enable-static-support \
+		--enable-cache \
+		--enable-disk-cache \
+		--enable-mem-cache \
+		--with-pcre=$INSTALL_PCRE \
+		"
+	echo $CMD
+	eval $CMD
+	check_return_exit
+	
+	echo "make httpd start ..."
+	make && make install
+	check_return_exit
+	# }}}
+}
+
+# }}}
+# }}}
+# {{{ install mysql
+# {{{ function install_mysql()
+
+############################
+# 安装mysql    #############
+############################
+function install_mysql()
+{
+	echo "start install mysql ..."
+	echo "cp $SRC_MYSQL to $INSTALL_MYSQL"
+	cp -r $SRC_MYSQL $INSTALL_MYSQL
+	check_return_exit
+
+	#删除 mysql-test 和lib/plugin/libdaemon_example* 防止不必要的依赖
+	echo "remove mysql-test and lib/plugin/libdaemon_example* ..."
+	rm -rf $INSTALL_MYSQL/mysql-test
+	check_return_exit
+	rm -rf $INSTALL_MYSQL/lib/plugin/libdaemon_example*
+	check_return_exit
+}
+
+# }}}
+# }}}
+# {{{ install php
+# {{{ function pre_install_ext()
+
+############################
+# 静态编译扩展预处理 #######
+############################
+function pre_install_ext()
+{
+	#处理pthreads扩展
+	sw_mkdir $INSTALL_EXT/pthreads	
+	echo "start install php-ext pthreads ..."
+	cp -r $SRC_PTHREADS $INSTALL_EXT
+	check_return_exit
+}
+
+# }}}
+# {{{ function install_jpeg()
+
+############################
+# 安装jpeg库   #############
+############################
+function install_jpeg()
+{
+	#创建目录
+	sw_mkdir $INSTALL_JPEG	
+	sw_mkdir $INSTALL_JPEG/bin
+	sw_mkdir $INSTALL_JPEG/lib
+	sw_mkdir $INSTALL_JPEG/include
+	sw_mkdir $INSTALL_JPEG/man
+	sw_mkdir $INSTALL_JPEG/man1
+	sw_mkdir $INSTALL_JPEG/man/man1
+	
+	echo "cd $SRC_JPEG ..."
+	cd $SRC_JPEG
+	check_return_exit
+	#配置
+	echo "start configure jpeg ..."
+	CMD="
+	./configure --prefix=$INSTALL_JPEG \
+		--enable-shared \
+		--enable-static \
+		"
+	echo $CMD
+	eval $CMD
+
+	echo "start make && make install jpeg ..."
+	make && make install
+	check_return_exit
+}
+
+# }}}
+# {{{ function install_png()
+
+############################
+# 安装pnglib库 #############
+############################
+function install_png()
+{
+	echo "cd $SRC_LIBPNG ..."
+	cd $SRC_LIBPNG
+	check_return_exit
+
+	#配置
+	echo "cp scripts/makefile.std makefile ..."
+	cp scripts/makefile.std makefile
+	check_return_exit
+	
+	echo "start configure libpng ..."
+	CMD="./configure --prefix=$INSTALL_LIBPNG"
+	echo $CMD
+	eval $CMD
+	check_return_exit
+
+	echo "start make && make install libpng ..."
+	make && make install
+	check_return_exit
+}
+
+# }}}
+# {{{ function install_freetype()
+
+############################
+# 安装freetype #############
+############################
+function install_freetype()
+{
+	echo "cd $SRC_FREETYPE ..."
+	cd $SRC_FREETYPE		
+	check_return_exit
+
+	sw_mkdir $INSTALL_FREETYPE
+
+	echo "start configure freetype ..."
+	CMD="./configure --prefix=$INSTALL_FREETYPE"
+	echo $CMD
+	eval $CMD
+	check_return_exit
+
+	echo "start make && make install freetype ..."
+	make &&  make install
+	check_return_exit
+}
+
+# }}}
+# {{{ function install_zlib()
+
+############################
+# 安装zlib     #############
+############################
+function install_zlib()
+{
+	echo "cd $SRC_ZLIB ..."
+	cd $SRC_ZLIB		
+	check_return_exit
+	sw_mkdir $INSTALL_ZLIB
+
+	echo "start configure zlib ..."
+	CMD="./configure --prefix=$INSTALL_ZLIB"
+	echo $CMD
+	eval $CMD
+	check_return_exit
+
+	echo "start make && make install zlib ...."
+	make && make install
+	check_return_exit
+}
+
+# }}}
+# {{{ function install_libxml2()
+
+############################
+# 安装libxml2  #############
+############################
+function install_libxml2()
+{
+	echo "cd $SRC_LIBXML ..."
+	cd $SRC_LIBXML			
+	check_return_exit
+
+	sw_mkdir $INSTALL_LIBXML
+
+	echo "start configure libxml2 ..."
+	CMD="./configure --prefix=$INSTALL_LIBXML"
+	echo $CMD
+	eval $CMD
+	check_return_exit
+
+	echo "start make && make install libxml2 ..."
+	make && make install
+	check_return_exit
+}
+
+# }}}
+# {{{ function install_gd()
+
+############################
+# 安装gd库     #############
+############################
+function install_gd()
+{
+	echo "cd $SRC_GD ..."
+	cd $SRC_GD			
+	check_return_exit
+
+	sw_mkdir $INSTALL_GD
+
+	echo "start configure gd ..."
+	CMD="
+	./configure --prefix=$INSTALL_GD \
+		--with-jpeg=$INSTALL_JPEG \
+		--with-png=$INSTALL_LIBPNG \
+		--with-zlib=$INSTALL_ZLIB \
+		--with-freetype=$INSTALL_FREETYPE \
+		--enable-m4_pattern_allow \
+	"
+	echo $CMD
+	eval $CMD
+	check_return_exit
+
+	echo "start make && make install gd ..."
+	echo "cd $SRC_GD ..."
+	cd $SRC_GD			
+	check_return_exit
+	make && make install
+	check_return_exit
+}
+
+# }}}
+# {{{ function install_php 
+
+############################
+# 安装php主程序 ############
+############################
+function install_php()
+{
+	echo "start install php ...."
+	echo "perpare install php ..."
+#	pre_install_ext
+#	install_jpeg
+#	install_png
+#	install_freetype
+#	install_zlib
+#	install_gd
+	install_libxml2
+
+	echo "fixed php bug ..."
+	rm -rf $INSTALL_GD/include/gd_io.h
+	cd $CUR_PWD
+	cp ${OPENSOURCE}gd_io.h $INSTALL_GD/include 
+	check_return_exit
+
+	echo "cd $SRC_PHP ..."
+	cd $SRC_PHP
+	check_return_exit
+
+	echo "start configure php ..."
+	CMD="
+	./configure --prefix=$INSTALL_PHP \
+		--with-config-file-path=$ETC_DIR \
+		--enable-maintainer-zts \
+		--enable-pthreads \
+		--with-pdo-mysql=$INSTALL_MYSQL \
+		--with-mysql=$INSTALL_MYSQL \
+		--with-apxs2=$INSTALL_HTTPD/bin/apxs \
+		--enable-ftp \
+		--with-gettext \
+		--enable-pcntl \
+		--with-libxml-dir=$INSTALL_LIBXML \
+		--enable-soap \
+		--with-gd=$INSTALL_GD \
+		--with-jpeg-dir=$INSTALL_JPEG \
+		--with-zlib-dir=$INSTALL_ZLIB \
+		--with-png-dir=$INSTALL_LIBPNG \
+		--with-freetype-dir=$INSTALL_FREETYPE \
+		--enable-mbstring \
+		--enable-sockets \
+	"
+	echo $CMD
+	eval $CMD
+	check_return_exit
+
+	aclocal
+	autoconf
+
+	echo "start make && make install php ..."
+	make && make install
+	check_return_exit
+}
+# }}}
+# }}}
+
+############################
+#  安装编译后的预处理 ######
+############################
+# {{{ function sw_after_install()
+
+function sw_after_install()
+{
+	if [ -d $TMP_DIR ]; then
+		echo "remove $TMP_DIR ..."
+		rm -rf $TMP_DIR
+		check_return_exit
+	fi
+}
+
+# }}}
+
+case $1 in
+mysql)
+#安装mysql
+	install_mysql
+#安装php
+	install_php
+	;;
+php)
+#安装php
+	install_php
+	;;
+*) 
+#安装httpd
+#	install_httpd
+
+#安装mysql
+#	install_mysql
+#安装php
+	install_php
+	exit 0
+	;;
+esac
+
+sw_after_install

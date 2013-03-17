@@ -1,0 +1,231 @@
+#!/bin/sh
+# vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: #
+# +---------------------------------------------------------------------------
+# | SWAN [ $_SWANBR_SLOGAN_$ ]
+# +---------------------------------------------------------------------------
+# | Copyright $_SWANBR_COPYRIGHT_$
+# +---------------------------------------------------------------------------
+# | Version  $_SWANBR_VERSION_$
+# +---------------------------------------------------------------------------
+# | Licensed ( $_SWANBR_LICENSED_URL_$ )
+# +---------------------------------------------------------------------------
+# | $_SWANBR_WEB_DOMAIN_$
+# +---------------------------------------------------------------------------
+# swansoft 出包工具
+
+############################
+# 相关配置项   #############
+############################
+CUR_PWD=`pwd`
+PATH_OPT=/usr/local/swan/opt
+PATH_TMP_CODE=/usr/local/tmp_swan_git
+PATH_OPT_MAKE=$PATH_TMP_CODE/opt/etc
+
+BUILD_ROOT="/home/hzx/rpmbuild"
+GIT_SWANSOFT="/root/code/swansoft"
+SWANSOFT_NAME="swansoft"
+SWANSOFT_VERSION="0.2.0"
+BUILD_TMP=/tmp
+BUILD_BALL=$BUILD_TMP/$SWANSOFT_NAME-$SWANSOFT_VERSION
+
+############################
+#          函数        #####
+############################
+
+# {{{ check_return_exit()
+
+check_return_exit ()
+{
+    if ! test 0 = $?; then
+        echo -e "\n!!!!!!!!!! Error, this script will exit !!!!!!!!!!\n"
+        exit 1
+    fi
+}
+
+# }}}
+# {{{ function sw_mkdir()
+
+############################
+# 创建目录 #################
+############################
+function sw_mkdir()
+{
+	echo "create $1 directory ...";
+	if [ -d $1 ] ;then
+		echo "directory $1 already exists. " 
+	else
+		mkdir -p $1
+		check_return_exit
+	fi
+}
+
+# }}} 
+
+###############################
+#configure把代码make到临时目录#
+###############################
+# {{{ function sw_configure()
+
+function sw_configure()
+{
+	echo "start configure code ..."
+	echo "cd $GIT_SWANSOFT ..."
+	cd $GIT_SWANSOFT
+	check_return_exit
+
+	echo " configure -m build_rpm code ..."
+	./configure -m build_rpm
+	check_return_exit
+
+	echo "mkdir opt dir ..."
+	sw_mkdir $PATH_OPT_MAKE
+
+	echo " make code to tmp_swan_git dir ..."
+	make install
+	check_return_exit
+
+	# 执行替换，并且存放到 /tmp/swansoft_版本 的目录
+	echo "cd current $CUR_PWD ..."
+	cd $CUR_PWD
+	check_return_exit
+	echo "build tar replace code ..."
+	../build_tar
+	check_return_exit
+}
+
+# }}}
+###############################
+#copy opt code to /tmp        #
+###############################
+# {{{ function sw_copy_opt()
+
+function sw_copy_opt()
+{
+	echo "copt opt to $BUILD_BALL ..."
+	echo "cp -r $PATH_OPT/* $BUILD_BALL/opt ..."
+	cp -r $PATH_OPT/* $BUILD_BALL/opt
+	check_return_exit
+}
+
+# }}}
+###############################
+# 删除代码临时目标            #
+###############################
+# {{{ function sw_rm_code()
+
+function sw_rm_code()
+{
+	echo "remove code tmp target $PATH_TMP_CODE ..."
+	rm -rf $PATH_TMP_CODE
+	check_return_exit
+}
+
+# }}}
+###############################
+# 制作tar包                   #
+###############################
+# {{{ function sw_make_tar()
+
+function sw_make_tar()
+{
+	echo "start make swansoft tar $BUILD_BALL.tar ..."
+	echo "cd $BUILD_TMP ..."
+	cd $BUILD_TMP
+	CMD="tar -zcf $BUILD_BALL.tar $SWANSOFT_NAME-$SWANSOFT_VERSION"
+	echo $CMD
+	eval $CMD
+	check_return_exit
+
+	echo "remove dir $BUILD_BALL ..."
+	rm -rf $BUILD_BALL
+	check_return_exit
+}
+
+# }}}
+###############################
+# 建立打包环境                #
+###############################
+# {{{ function sw_set_rpm_env()
+
+function sw_set_rpm_env()
+{
+	echo "cd current $CUR_PWD ..."
+	cd $CUR_PWD
+	check_return_exit
+	echo "cp -f macros to /usr/lib/rpm ..."
+	cp -f ../macros /usr/lib/rpm/ 
+	check_return_exit
+
+	echo "mkdir rpmbuild ..."
+	sudo -u hzx mkdir -p $BUILD_ROOT
+	sudo -u hzx mkdir -p $BUILD_ROOT/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+	check_return_exit
+
+	echo "cd current $CUR_PWD ..."
+	cd $CUR_PWD
+	check_return_exit
+	echo "build rpm spec file...."
+	../build_spec
+	check_return_exit
+
+	echo "mv spec to buildroot ..."
+	mv $SWANSOFT_NAME-$SWANSOFT_VERSION.spec $BUILD_ROOT/SPECS
+	check_return_exit
+
+	echo "mv tar file to SOURCES ..."
+	mv $BUILD_BALL.tar $BUILD_ROOT/SOURCES
+	check_return_exit
+}
+
+# }}}
+###############################
+# 执行打包                    #
+###############################
+# {{{ function sw_rpmbuild()
+
+function sw_rpmbuild()
+{
+	echo "start rpmbuild ..."
+	sudo -u hzx rpmbuild -bb $BUILD_ROOT/SPECS/$SWANSOFT_NAME-$SWANSOFT_VERSION.spec
+	check_return_exit
+}
+
+# }}}
+###############################
+# 预处理                      #
+###############################
+# {{{ function sw_pre_install()
+
+function sw_pre_install()
+{
+	if [ -d $BUILD_ROOT ]; then
+		echo "remove $BUILD_ROOT ..."
+		rm -rf $BUILD_ROOT
+		check_return_exit
+	fi
+	if [ -d $PATH_TMP_CODE ]; then
+		echo "remove $PATH_TMP_CODE ..."
+		rm -rf $PATH_TMP_CODE
+		check_return_exit
+	fi
+	if [ -d $BUILD_TMP/$SWANSOFT_NAME-$SWANSOFT_VERSION ]; then
+		echo "remove /tmp/$SWANSOFT_NAME-$SWANSOFT_VERSION ..."
+		rm -rf $BUILD_TMP/$SWANSOFT_NAME-$SWANSOFT_VERSION
+		check_return_exit
+	fi
+}
+
+# }}}
+
+sw_pre_install
+
+###############################
+# 打包全过程                  #
+###############################
+
+sw_configure
+sw_copy_opt
+sw_rm_code
+sw_make_tar
+sw_set_rpm_env
+sw_rpmbuild
