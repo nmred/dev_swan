@@ -51,7 +51,7 @@ class build_spec
 		'Packager'		=> 'nmred <nmred_2008@126.com>',
 		'Distribution'	=> 'Open source Project',
 		'Source'        => '%{name}-%{version}.tar',
-		'Buildroot'     => '%{_tmppath}/%{name}-%{version}-root',
+		'Buildroot'     => '%{_tmppath}/%{name}-%{version}',
 		'Prefix'        => '/usr/local/swan',
 		'Requires'      => 'chkconfig, sudo',
 	);

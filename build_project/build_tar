@@ -36,7 +36,7 @@ class build_tar
 	/**
 	 * 需要构建的软件目录  
 	 */
-	const SWANSOFT_GIT_DIR = '/root/code/swansoft/';
+	const SWANSOFT_GIT_DIR = '/usr/local/tmp_swan_git/';
 
 	// }}} 
 	// {{{ members
@@ -69,7 +69,6 @@ class build_tar
 			throw new Exception("mkdir $dir_name failed. ");	
 		}
 		$this->_process_files();	
-		$this->_create_tar();
 	}
 
 	// }}}
@@ -83,7 +82,7 @@ class build_tar
 	 */
 	protected function _get_output_dir()
 	{
-		$dir_name = './' . SWAN_SOFTNAME . '-' . SWAN_VERSION . '/';
+		$dir_name = '/tmp/' . SWAN_SOFTNAME . '-' . SWAN_VERSION . '/';
 
 		return $dir_name;
 	}
@@ -171,31 +170,6 @@ class build_tar
 		}
 
 		fclose($handle);
-	}
-
-	// }}}
-	// {{{ protected function _create_tar()
-
-	/**
-	 * 创建打包文件 
-	 * 
-	 * @access protected
-	 * @return void
-	 */
-	protected function _create_tar()
-	{
-		$out_dir = $this->_get_output_dir();		
-		$cmd = 'tar -zcf ' . SWAN_SOFTNAME . '-' . SWAN_VERSION . '.tar ' . $out_dir;  
-		exec($cmd, $return_val, $return_status);
-		if (0 !== $return_status) {
-			throw new Exception("create tar failed. ");	
-		}
-		$rm_cmd = 'rm -rf ' . $out_dir;
-		unset($return_val);
-		exec($rm_cmd, $return_val, $return_status);
-		if (0 !== $return_status) {
-			throw new Exception("remove dir $out_dir failed. ");	
-		}
 	}
 
 	// }}}
