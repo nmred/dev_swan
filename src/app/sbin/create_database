@@ -30,7 +30,7 @@ require_once D_PATH_SWAN_LIB . 'sw_create_database.class.php';
 try {
 	$create_database = new sw_create_database();
 	$create_database->set_filename('/root/code/swansoft/docs/database/db_schema.xml')
-					->set_dirname('/root/code/swansoft/src/sql/')
+					->set_dirname('/root/code/swansoft/src/tmp_install/sql')
 					->run();	
 } catch (sw_exception $e) {
 	echo $e->getMessage() . PHP_EOL;	

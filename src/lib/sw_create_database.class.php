@@ -112,6 +112,11 @@ class sw_create_database
 		foreach ($tmp as $key => $value) {
 			$output = $this->__out_put_dir . self::PREFIX . $value['@name'] . '.sql';
 			$output_str = self::SQL_COMMENT . self::SPACE_KEY . self::VIM_HEADER . PHP_EOL;
+			$output_str .= self::SQL_COMMENT . PHP_EOL;
+			$output_str .= self::SQL_COMMENT . 'Current Database: `' . $value['@name'] . '`'; 
+			$output_str .= self::SQL_COMMENT . PHP_EOL . PHP_EOL;
+			$output_str .= 'CREATE DATABASE /*!32312 IF NOT EXISTS*/ `' . $value['@name'] . '` /*!40100 DEFAULT CHARACTER SET utf8 */;' . PHP_EOL . PHP_EOL;
+			$output_str .= 'USE `' . $value['@name'] . '`;' . PHP_EOL;
 
 			$tmp_table = isset($value['tables']['table'][0]) ? $value['tables']['table'] : $value['tables'];
 			foreach ($tmp_table as $table) {

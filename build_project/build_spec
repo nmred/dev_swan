@@ -53,7 +53,7 @@ class build_spec
 		'Source'        => '%{name}-%{version}.tar',
 		'Buildroot'     => '%{_tmppath}/%{name}-%{version}',
 		'Prefix'        => '/usr/local/swan',
-		'Requires'      => 'chkconfig, sudo',
+		'Requires'      => 'chkconfig, sudo, nmap, libc-client',
 	);
 
 	/**
@@ -70,6 +70,8 @@ class build_spec
 		'install'     => true,
 		'clean'       => true,
 		'post'        => true,
+		'preun'       => true,
+		'postun'      => true,
 		'files'       => true,
 		'changelog'   => true,
 	);
@@ -155,6 +157,9 @@ class build_spec
 		foreach ($this->__spec_info as $key => $value) {
 			$string .= $key . ':' . $value . PHP_EOL;
 		}
+
+		$string .= '%define debug_packages %{nil}' . PHP_EOL;
+		$string .= '%define debug_package %{nil}' . PHP_EOL;
 
 		foreach ($this->__sections as $key => $value) {
 			if (false !== $this->__sections[$key]) {
@@ -244,19 +249,21 @@ class build_spec
 	 */
 	protected function _set_pre()
 	{
-		$post_str = '';
-		$post_str .= 'echo "       ╭═════════════════════════════════════════════╮"' . PHP_EOL;
-		$post_str .= 'echo "       ║                                             ║"' . PHP_EOL;
-		$post_str .= 'echo "       ║    ' . SWANBR_SLOGAN . '        ║"' . PHP_EOL;
-		$post_str .= 'echo "       ║                                             ║"' . PHP_EOL;
-		$post_str .= 'echo "       ╰═════════════════════════════════════════════╯"' . PHP_EOL;
-		$post_str .= 'echo "================================================================"' . PHP_EOL;
-		$post_str .= 'if grep -q swan /etc/passwd' . PHP_EOL;
-		$post_str .= 'then' . PHP_EOL;
-		$post_str .= 'echo "Notice: Run this soft will use swan user"' . PHP_EOL;
-		$post_str .= 'else' . PHP_EOL;
-		$post_str .= 'sudo adduser swan -s /sbin/nologin' . PHP_EOL;
-		$post_str .= 'fi' . PHP_EOL;
+		$post_str = <<<'EOD'
+if grep -q swan /etc/passwd
+then
+	echo "Notice: Run this soft will use swan user"
+else
+	sudo adduser swan -s /sbin/nologin
+fi
+if test -d %{prefix}; then
+	echo ""
+	echo "Install dir \'%{prefix}\' exists. You need resolve it manually before install swansoft. Exit now."
+	echo ""
+# return !0 for exit.
+	test ""
+fi
+EOD;
 		return $post_str;	
 	}
 
@@ -307,8 +314,66 @@ class build_spec
 	 */
 	protected function _set_post()
 	{
-		$post_str = '';
+		$post_str = <<<EOD
+# build install
+echo ""
+echo "Build: START"
+chmod -R 755  %{prefix}/app
+chmod -R 755  %{prefix}/tmp_install/sbin
+if %{prefix}/tmp_install/sbin/build_install; then
+	echo -e "Build: \033[0;32mDONE\033[0m"
+else    
+	echo -e "Build: \033[0;31mFAIL\033[0m"
+fi
+EOD;
 		return $post_str;	
+	}
+
+	// }}}
+	// {{{ protected function _set_preun()
+		
+	/**
+	 * 准备卸载做的处理
+	 * 
+	 * @access protected
+	 * @return string
+	 */
+	protected function _set_preun()
+	{
+		//nowdoc 语法
+		$preun_str = <<<'EOD'
+# stop swan_soft
+echo -n "Stop SWANSOFT ... "
+%{prefix}/tmp_install/sbin/stop_swansoft
+echo "OK"
+# backup cron config
+mv /etc/cron.d/swan_soft /usr/local/swan/opt/etc/sw_cron.crond.backup > /dev/null 2>&1
+# del initd
+/sbin/chkconfig --del swan_soft > /dev/null 2>&1
+# backup old version
+SW_TMP_BAK_PATH=%{prefix}-backup-$(date +%%Y%%m%%d-%%H%%M%%S)
+mv %{prefix} $SW_TMP_BAK_PATH
+echo "Old version '%{prefix}' backup to '$SW_TMP_BAK_PATH'"
+EOD;
+		return $preun_str;	
+	}
+
+	// }}}
+	// {{{ protected function _set_postun()
+		
+	/**
+	 * 卸载后做的处理
+	 * 
+	 * @access protected
+	 * @return string
+	 */
+	protected function _set_postun()
+	{
+		$postun_str = <<<EOD
+rm -f /etc/init.d/swan_soft /usr/bin/swan_soft
+rm -f /etc/cron.d/swan_soft
+EOD;
+		return $postun_str;	
 	}
 
 	// }}}
