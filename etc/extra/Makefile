@@ -1,4 +1,4 @@
-TARGET0 = /usr/local/swan/opt/etc/extra
+TARGET0 = /usr/local/tmp_dev_swan_git/opt/etc/extra
 
 SUBDIRS = 
 INC_SRC0 = httpd-vhosts.conf.

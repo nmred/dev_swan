@@ -1,4 +1,4 @@
-TARGET0 = /usr/local/dev_swan/app/
+TARGET0 = /usr/local/tmp_dev_swan_git/app/
 
 SUBDIRS = sbin
 INC_SRC0 = empty.
