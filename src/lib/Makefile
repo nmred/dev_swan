@@ -1,21 +1,21 @@
-TARGET0 = /usr/local/dev_swan/lib/
+TARGET0 = /usr/local/tmp_dev_swan_git/lib/
 
-SUBDIRS = xml iterator create_makefile
-INC_SRC0 = sw_create_makefile.class.php. sw_create_database.class.php. sw_create_database_wiki.class.php. sw_exception.class.php. sw_xml.class.php.
+SUBDIRS = create_makefile xml iterator
+INC_SRC0 = sw_exception.class.php. sw_create_database_wiki.class.php. sw_create_database.class.php. sw_xml.class.php. sw_create_makefile.class.php.
  
 INSTALL0 = /usr/bin/install -m 644 -o swan -g swan $< $(TARGET0)
 
 
 all:
-sw_create_makefile.class.php.: sw_create_makefile.class.php
-	$(INSTALL0)
-sw_create_database.class.php.: sw_create_database.class.php
+sw_exception.class.php.: sw_exception.class.php
 	$(INSTALL0)
 sw_create_database_wiki.class.php.: sw_create_database_wiki.class.php
 	$(INSTALL0)
-sw_exception.class.php.: sw_exception.class.php
+sw_create_database.class.php.: sw_create_database.class.php
 	$(INSTALL0)
 sw_xml.class.php.: sw_xml.class.php
+	$(INSTALL0)
+sw_create_makefile.class.php.: sw_create_makefile.class.php
 	$(INSTALL0)
 
 

@@ -27,7 +27,7 @@ DIR_MOD="755"
 
 # 基本路径配置
 ARRAY_DIRS=(
-    "tmp"
+	"web"
     "log"
         "log/stdout"
         "log/backup"
@@ -35,10 +35,8 @@ ARRAY_DIRS=(
             "log/backup/error"
             "log/backup/large"
         "log/httpd"
-    "plugins"
     "data"
         "data/mysql"
-        "data/rrd"
     "run"
     "template"
         "template/tpl"
@@ -47,9 +45,9 @@ ARRAY_DIRS=(
 
 # 需要 chown 的目录 ( [是否需要递归. 1 | 0] [路径] )
 ARRAY_CHOWN=(
-    "1" "tmp"
     "1" "log"
     "1" "data"
+    "1" "web/wiki/data"
     "1" "run"
     "1" "template/tpl_c"
     "1" "opt/etc"

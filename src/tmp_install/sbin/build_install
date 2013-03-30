@@ -249,10 +249,13 @@ run_set_initd ()
     t_path_swan_soft="$PATH_APP_SBIN/dev_swan"
     t_path_sw_initd="/etc/init.d/dev_swan"
     t_path_sw_usrbin="/usr/bin/dev_swan"
+	t_path_jjcm="$PATH_APP_SBIN/jjcm"
+    t_path_jjcm_usrbin="/usr/bin/jjcm"
     rm -f $t_path_sw_initd >> $LOG_INSTALL 2>&1
     ln -s $t_path_swan_soft $t_path_sw_initd >> $LOG_INSTALL 2>&1
     rm -f $t_path_sw_usrbin >> $LOG_INSTALL 2>&1
     ln -s $t_path_swan_soft $t_path_sw_usrbin >> $LOG_INSTALL 2>&1
+    ln -s $t_path_jjcm $t_path_jjcm_usrbin >> $LOG_INSTALL 2>&1
     $CMD_CHKCONFIG dev_swan off >> $LOG_INSTALL 2>&1
 
     echo_log -e "$ECHO_OK"
