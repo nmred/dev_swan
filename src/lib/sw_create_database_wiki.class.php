@@ -13,8 +13,7 @@
 // +---------------------------------------------------------------------------
  
 require_once 'dev_core.php';
-require_once D_PATH_SWAN_SOFT . 'core.php';
-require_once PATH_SWAN_LIB . 'sw_xml.class.php';
+require_once PATH_DSWAN_LIB . 'sw_xml.class.php';
 /**
 +------------------------------------------------------------------------------
 * 创建数据库字典
@@ -73,7 +72,7 @@ class sw_create_database_wiki
 	{
 		if (!file_exists($this->__xml_filename)
 			|| !file_exists($this->__out_put_dir)) {
-			require PATH_SWAN_LIB . 'sw_exception.class.php';
+			require PATH_DSWAN_LIB . 'sw_exception.class.php';
 			throw new sw_exception('database xml desc file or output directory not exists. ');	
 		}
 
@@ -111,12 +110,12 @@ class sw_create_database_wiki
 	public function set_filename($filename)
 	{
 		if (!file_exists($filename)) {
-			require PATH_SWAN_LIB . 'sw_exception.class.php';
+			require PATH_DSWAN_LIB . 'sw_exception.class.php';
 			throw new sw_exception('database xml desc file not exists. ');	
 		}
 
 		if (!is_readable($filename)) {
-			require PATH_SWAN_LIB . 'sw_exception.class.php';
+			require PATH_DSWAN_LIB . 'sw_exception.class.php';
 			throw new sw_exception('database xml desc file not readable. ');	
 		}
 
@@ -138,7 +137,7 @@ class sw_create_database_wiki
 	public function set_dirname($dirname)
 	{
 		if (!file_exists($dirname)) {
-			require PATH_SWAN_LIB . 'sw_exception.class.php';
+			require PATH_DSWAN_LIB . 'sw_exception.class.php';
 			throw new sw_exception('database output directory not exists. ');	
 		}
 

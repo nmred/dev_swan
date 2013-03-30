@@ -42,7 +42,7 @@ class sw_create_makefile
 		$class_name = 'sw_create_makefile_' .  $type;
 
 		if (!class_exists($class_name)) {
-			require_once D_PATH_SWAN_LIB . 'create_makefile/' . $class_name . '.class.php';	
+			require_once PATH_DSWAN_LIB . 'create_makefile/' . $class_name . '.class.php';	
 		}
 
 		if (!class_exists($class_name)) {

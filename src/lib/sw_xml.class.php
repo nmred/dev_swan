@@ -1,4 +1,3 @@
-#!/usr/local/dev_swan/opt/php/bin/php
 <?php
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: */
 // +---------------------------------------------------------------------------
@@ -13,25 +12,45 @@
 // | $_SWANBR_WEB_DOMAIN_$
 // +---------------------------------------------------------------------------
  
-require_once 'dev_core.php';
-require_once PATH_DSWAN_LIB . 'sw_create_database_wiki.class.php';
-
 /**
 +------------------------------------------------------------------------------
-* 生成MYSQL 数据字典
+* XML类工厂
 +------------------------------------------------------------------------------
 * 
-* @package 
+* @package sw_xml
 * @version $_SWANBR_VERSION_$
 * @copyright $_SWANBR_COPYRIGHT_$
 * @author $_SWANBR_AUTHOR_$ 
 +------------------------------------------------------------------------------
 */
-try {
-	$create_database = new sw_create_database_wiki();
-	$create_database->set_filename('/root/code/swansoft/docs/database/db_schema.xml')
-					->set_dirname('/root/code/wikiswan/data/pages/swansoft/db/')
-					->run();	
-} catch (sw_exception $e) {
-	echo $e->getMessage() . PHP_EOL;	
+class sw_xml
+{
+    // {{{ functions
+    // {{{ public static function factory()
+
+    /**
+     * XML类工厂 
+     * 
+     * @param string $package 创建对象名 
+     * @static
+     * @access public
+     * @return sw_xml_* 
+     */
+    public static function factory($package) 
+    {
+        $class_name = 'sw_xml_' . $package;
+        if (!class_exists($class_name)) {
+            require_once PATH_DSWAN_LIB . 'xml/' . $class_name . '.class.php';
+        }
+
+        if (!class_exists($class_name)) {
+            require_once PATH_DSWAN_LIB . 'xml/sw_xml_exception.class.php';
+            throw new sw_xml_exception('Can not load #%s# class.', '000100010008', $class_name);
+        }
+        
+        return new $class_name();
+    }
+
+    // }}}
+    // }}}
 }

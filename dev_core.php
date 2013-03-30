@@ -23,13 +23,8 @@
 +------------------------------------------------------------------------------
 */
 
-// {{{ 重要！这个是SWAN_DEV和SWANSOFT中一些参数共享的开始目录
-
-define('D_LINK', '/usr/local/swan/');
-// }}}
 // {{{  绝对路劲
-define('D_PATH_SWAN_SOFT', D_LINK);
-define('D_PATH_SWAN_BASE', realpath(dirname(__FILE__)));
-    define('D_PATH_SWAN_LIB', D_PATH_SWAN_BASE . '/lib/');
+define('PATH_DSWAN_BASE', realpath(dirname(__FILE__)));
+    define('PATH_DSWAN_LIB', PATH_DSWAN_BASE . '/lib/');
 // }}}
 

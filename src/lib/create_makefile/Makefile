@@ -1,15 +1,15 @@
-TARGET0 = /usr/local/tmp_dev_swan_git/lib/create_makefile
+TARGET0 = /usr/local/dev_swan/lib/create_makefile
 
 SUBDIRS = 
-INC_SRC0 = sw_create_makefile_base.class.php. sw_create_makefile_common.class.php. sw_create_makefile_wiki.class.php.
+INC_SRC0 = sw_create_makefile_common.class.php. sw_create_makefile_base.class.php. sw_create_makefile_wiki.class.php.
  
 INSTALL0 = /usr/bin/install -m 644 -o swan -g swan $< $(TARGET0)
 
 
 all:
-sw_create_makefile_base.class.php.: sw_create_makefile_base.class.php
-	$(INSTALL0)
 sw_create_makefile_common.class.php.: sw_create_makefile_common.class.php
+	$(INSTALL0)
+sw_create_makefile_base.class.php.: sw_create_makefile_base.class.php
 	$(INSTALL0)
 sw_create_makefile_wiki.class.php.: sw_create_makefile_wiki.class.php
 	$(INSTALL0)

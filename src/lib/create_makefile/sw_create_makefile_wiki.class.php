@@ -12,7 +12,7 @@
 // | $_SWANBR_WEB_DOMAIN_$
 // +---------------------------------------------------------------------------
 
-require_once D_PATH_SWAN_LIB . 'create_makefile/sw_create_makefile_base.class.php';
+require_once PATH_DSWAN_LIB . 'create_makefile/sw_create_makefile_base.class.php';
  
 /**
 +------------------------------------------------------------------------------

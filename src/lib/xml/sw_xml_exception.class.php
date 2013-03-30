@@ -1,4 +1,3 @@
-#!/usr/local/dev_swan/opt/php/bin/php
 <?php
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker: */
 // +---------------------------------------------------------------------------
@@ -12,26 +11,22 @@
 // +---------------------------------------------------------------------------
 // | $_SWANBR_WEB_DOMAIN_$
 // +---------------------------------------------------------------------------
- 
-require_once 'dev_core.php';
-require_once PATH_DSWAN_LIB . 'sw_create_database_wiki.class.php';
+
+require_once PATH_DSWAN_LIB . 'sw_exception.class.php';
 
 /**
 +------------------------------------------------------------------------------
-* 生成MYSQL 数据字典
+* XML类异常处理
 +------------------------------------------------------------------------------
 * 
+* @uses sw_exception
 * @package 
 * @version $_SWANBR_VERSION_$
 * @copyright $_SWANBR_COPYRIGHT_$
 * @author $_SWANBR_AUTHOR_$ 
 +------------------------------------------------------------------------------
 */
-try {
-	$create_database = new sw_create_database_wiki();
-	$create_database->set_filename('/root/code/swansoft/docs/database/db_schema.xml')
-					->set_dirname('/root/code/wikiswan/data/pages/swansoft/db/')
-					->run();	
-} catch (sw_exception $e) {
-	echo $e->getMessage() . PHP_EOL;	
+
+class sw_xml_exception extends sw_exception
+{
 }
