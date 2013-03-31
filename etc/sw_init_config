@@ -10,12 +10,14 @@
 ARRAY_START=(
     mysql
     httpd
+    redis
     cron_etc
 )
 
 # 需要停止的进程
 ARRAY_STOP=(
     cron_etc
+	redis
     httpd
     mysql
 )
@@ -24,6 +26,7 @@ ARRAY_STOP=(
 ARRAY_WATCH=(
     mysql "mysqld_safe,mysqld"
     httpd "httpd"
+	redis "redis-server"
     cron_etc "crond_etc"
 )
 

@@ -37,6 +37,7 @@ ARRAY_DIRS=(
         "log/httpd"
     "data"
         "data/mysql"
+        "data/redis"
     "run"
     "template"
         "template/tpl"

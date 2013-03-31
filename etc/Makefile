@@ -1,7 +1,7 @@
 TARGET0 = /usr/local/tmp_dev_swan_git/opt/etc
 
 SUBDIRS = extra
-INC_SRC0 = sw_init_config. sw_cron.cf. httpd.conf. php.ini. my.cnf.
+INC_SRC0 = sw_init_config. sw_cron.cf. httpd.conf. php.ini. redis.conf. my.cnf.
  
 INSTALL0 = /usr/bin/install -m 644 -o swan -g swan $< $(TARGET0)
 
@@ -14,6 +14,8 @@ sw_cron.cf.: sw_cron.cf
 httpd.conf.: httpd.conf
 	$(INSTALL0)
 php.ini.: php.ini
+	$(INSTALL0)
+redis.conf.: redis.conf
 	$(INSTALL0)
 my.cnf.: my.cnf
 	$(INSTALL0)

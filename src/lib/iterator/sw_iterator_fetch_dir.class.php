@@ -79,7 +79,7 @@ class sw_iterator_fetch_dir extends RecursiveIteratorIterator
 	public function callHasChildren()
 	{
 		$sub_path = $this->getSubPathname();
-		if (isset($this->__ignore_dir[$sub_path]) || isset($this->__self_ignore_dir[$sub_path . '/.'])) {
+		if (isset($this->__ignore_dir[$sub_path])) {
 			return false;
 		}
 		return parent::callHasChildren();

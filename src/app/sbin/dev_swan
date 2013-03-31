@@ -17,6 +17,7 @@
 #
 # 此脚本将控制如下进程, 如果进程列表有变化, 则必须更新 Start, Stop 和 Watch:
 #   Httpd
+#	Redis
 #   MySQL
 #   CRON_ETC
 #
@@ -32,6 +33,7 @@ PATH_OPT="$PATH_SWAN/opt"
 PATH_OPT_ETC="$PATH_OPT/etc"
 PATH_OPT_MYSQL="$PATH_OPT/mysql"
 PATH_OPT_HTTP="$PATH_OPT/apache2"
+PATH_OPT_REDIS="$PATH_OPT/redis"
 PATH_RUN="$PATH_SWAN/run"
 PATH_LOG="$PATH_SWAN/log"
 PATH_INITLOG="$PATH_LOG/init.out"
@@ -41,6 +43,7 @@ PATH_SW_CROND="/etc/cron.d/dev_swan"
 
 PIDF_MYSQL="$PATH_RUN/mysql.pid"
 PIDF_HTTPD="$PATH_RUN/httpd.pid"
+PIDF_REDIS="$PATH_RUN/redis.pid"
 
 ECHO_LINE="------------------------------"
 ECHO_FAIL="\033[0;31mFAIL\033[0m"
@@ -377,6 +380,7 @@ watch_proc ()
 {
     array_watch_common=(
         httpd
+		redis
     )
 
     t_proc_name_watch="$1"
@@ -575,6 +579,21 @@ start_httpd ()
     let "init_res = 0 || $?"
 }
 
+start_redis ()
+{
+    init_res=0
+    init_msg=""
+
+    watch_proc redis
+    if test "0" = "$watch_res"; then
+        init_res=2
+        return
+    fi
+
+    $PATH_OPT_REDIS/bin/redis-server  $PATH_OPT_ETC/redis.conf
+    let "init_res = 0 || $?"
+}
+
 start_cron_etc ()
 {
     init_res=0
@@ -652,6 +671,15 @@ stop_httpd ()
     init_msg=""
 
     $PATH_OPT_HTTP/bin/apachectl -f $PATH_OPT_ETC/httpd.conf -k stop
+    let "init_res = 0 || $?"
+}
+
+stop_redis ()
+{
+    init_res=0
+    init_msg=""
+
+    $PATH_OPT_REDIS/bin/redis-cli shutdown
     let "init_res = 0 || $?"
 }
 
