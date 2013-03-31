@@ -17,6 +17,7 @@
 #
 # 此脚本将控制如下进程, 如果进程列表有变化, 则必须更新 Start, Stop 和 Watch:
 #   Httpd
+#   Snmpd
 #	Redis
 #   MySQL
 #   CRON_ETC
@@ -44,6 +45,7 @@ PATH_SW_CROND="/etc/cron.d/dev_swan"
 PIDF_MYSQL="$PATH_RUN/mysql.pid"
 PIDF_HTTPD="$PATH_RUN/httpd.pid"
 PIDF_REDIS="$PATH_RUN/redis.pid"
+PIDF_SNMPD="$PATH_RUN/sw_snmpd.pid"
 
 ECHO_LINE="------------------------------"
 ECHO_FAIL="\033[0;31mFAIL\033[0m"
@@ -380,6 +382,7 @@ watch_proc ()
 {
     array_watch_common=(
         httpd
+		snmpd
 		redis
     )
 
@@ -594,6 +597,21 @@ start_redis ()
     let "init_res = 0 || $?"
 }
 
+start_snmpd ()
+{
+    init_res=0
+    init_msg=""
+
+    watch_proc snmpd
+    if test "0" = "$watch_res"; then
+        init_res=2
+        return
+    fi
+
+    $PATH_OPT_SNMP/sbin/snmpd -c $PATH_OPT_ETC/snmp.conf -p $PIDF_SNMPD
+    let "init_res = 0 || $?"
+}
+
 start_cron_etc ()
 {
     init_res=0
@@ -612,6 +630,7 @@ start_cron_etc ()
 stop_proc ()
 {
     array_stop_common=(
+		snmpd
     )
 
     t_proc_name_stop="$1"

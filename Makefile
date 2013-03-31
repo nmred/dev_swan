@@ -1,7 +1,7 @@
 TARGET0 = /usr/local/tmp_dev_swan_git/
 
 SUBDIRS = src etc
-INC_SRC0 = .gitignore. dev_core.php.
+INC_SRC0 = .gitignore. dev_core.php. snmp.conf.
  
 INSTALL0 = /usr/bin/install -m 644 -o swan -g swan $< $(TARGET0)
 
@@ -10,6 +10,8 @@ all:
 .gitignore.: .gitignore
 	$(INSTALL0)
 dev_core.php.: dev_core.php
+	$(INSTALL0)
+snmp.conf.: snmp.conf
 	$(INSTALL0)
 
 

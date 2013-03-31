@@ -10,6 +10,7 @@
 ARRAY_START=(
     mysql
     httpd
+	snmpd
     redis
     cron_etc
 )
@@ -18,6 +19,7 @@ ARRAY_START=(
 ARRAY_STOP=(
     cron_etc
 	redis
+	snmpd
     httpd
     mysql
 )
@@ -26,6 +28,7 @@ ARRAY_STOP=(
 ARRAY_WATCH=(
     mysql "mysqld_safe,mysqld"
     httpd "httpd"
+	snmpd "snmpd"
 	redis "redis-server"
     cron_etc "crond_etc"
 )
