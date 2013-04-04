@@ -1,4 +1,4 @@
-TARGET0 = /usr/local/tmp_dev_swan_git/opt/etc
+TARGET0 = /usr/local/dev_swan/opt/etc
 
 SUBDIRS = extra
 INC_SRC0 = sw_init_config. sw_cron.cf. httpd.conf. php.ini. redis.conf. snmp.conf. my.cnf.

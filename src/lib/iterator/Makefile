@@ -1,4 +1,4 @@
-TARGET0 = /usr/local/tmp_dev_swan_git/lib/iterator/
+TARGET0 = /usr/local/dev_swan/lib/iterator/
 
 SUBDIRS = 
 INC_SRC0 = sw_iterator_fetch_dir.class.php.
