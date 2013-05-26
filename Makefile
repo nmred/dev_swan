@@ -1,15 +1,15 @@
 TARGET0 = /usr/local/dev_swan/
 
 SUBDIRS = src etc
-INC_SRC0 = .gitignore. dev_core.php.
+INC_SRC0 = dev_core.php. .gitignore.
  
 INSTALL0 = /usr/bin/install -m 644 -o swan -g swan $< $(TARGET0)
 
 
 all:
-.gitignore.: .gitignore
-	$(INSTALL0)
 dev_core.php.: dev_core.php
+	$(INSTALL0)
+.gitignore.: .gitignore
 	$(INSTALL0)
 
 
