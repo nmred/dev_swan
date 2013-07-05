@@ -27,10 +27,42 @@ require_once PATH_DSWAN_LIB . 'sw_create_database.class.php';
 * @author $_SWANBR_AUTHOR_$ 
 +------------------------------------------------------------------------------
 */
+
+$options = getopt('ht:');
+$usage = <<<EOD
+创建数据库 SQL 语句工具：
+	-h 帮助
+	-t 创建的类型 swan 产品主表 | unit 单元测试表
+EOD;
+
+if (isset($options['h'])) {
+	echo $usage , PHP_EOL;
+	exit(0);
+}
+
+if (isset($options['t'])) {
+	switch ($options['t']) {
+		case 'unit':
+			$file_name = '/root/code/swansoft/tests/db_schema.xml';
+			$output_name = '/root/code/swansoft/tests/';
+			break;	
+		case 'swan':
+			$file_name = '/root/code/swansoft/docs/database/db_schema.xml';
+			$output_name = '/root/code/swansoft/src/tmp_install/sql';
+			break;	
+		default:
+			echo $usage, PHP_EOL;
+			exit(1);
+	}
+} else {
+	echo $usage, PHP_EOL;
+	exit(1);
+}
+
 try {
 	$create_database = new sw_create_database();
-	$create_database->set_filename('/root/code/swansoft/docs/database/db_schema.xml')
-					->set_dirname('/root/code/swansoft/src/tmp_install/sql')
+	$create_database->set_filename($file_name)
+					->set_dirname($output_name)
 					->run();	
 } catch (sw_exception $e) {
 	echo $e->getMessage() . PHP_EOL;	

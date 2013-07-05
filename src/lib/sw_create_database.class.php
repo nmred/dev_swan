@@ -300,7 +300,8 @@ class sw_create_database
 		$desc_str .= self::SQL_COMMENT . PHP_EOL;
 		
 		//建表语句
-		$sql_str = PHP_EOL . 'CREATE TABLE' . self::SPACE_KEY . self::SQL_SIGN . $table['@name'] . self::SQL_SIGN;
+		$sql_str = PHP_EOL . 'DROP TABLE IF EXISTS ' . self::SQL_SIGN . $table['@name'] . self::SQL_SIGN . ';';
+		$sql_str .= PHP_EOL . 'CREATE TABLE' . self::SPACE_KEY . self::SQL_SIGN . $table['@name'] . self::SQL_SIGN;
 		$sql_str .=  self::SPACE_KEY . '(' . PHP_EOL;
 
 		//生成字段语句
