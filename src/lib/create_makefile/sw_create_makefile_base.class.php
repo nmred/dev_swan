@@ -299,6 +299,10 @@ abstract class sw_create_makefile_base
 			$install_make_dir .= 'make_dir' . $key . ' ';
 			$rule .= $this->_get_rule_src($value, $key);
 		}
+
+		if (empty($file_list)) { // 该目录只有目录没有文件
+			$install_make_dir .= 'make_dir0';
+		}
 		$install_make_dir .= $all_target;
 
 		$rep_replace = array(
@@ -423,7 +427,7 @@ MAKEFILE;
 			if (false === $flag) {
 				$inc_src[0][] =	$file_name . '.';
 			}
-		}	
+		}
 
 		return $inc_src;
 	}
