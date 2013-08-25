@@ -1,11 +1,24 @@
 #!/usr/local/dev_swan/opt/php/bin/php
 <?php
 require_once 'dev_core.php';
-
 require_once PATH_DSWAN_LIB . 'sw_create_makefile.class.php'; 
-try {
-	$create_makefile = sw_create_makefile::factory('common');
-	$create_makefile->set_root_dir('/usr/local/swan/')->run();	
-} catch (Exception $e) {
-	echo $e->getMessage() . PHP_EOL;	
+
+$help = <<<EOL
+configure 用法
+	-h help
+	-d make 到目标的根目录
+
+EOL;
+
+$opts = getopt("hd:");
+if (isset($opts['d']) && !isset($opts['h'])) {
+	try {
+		$create_makefile = sw_create_makefile::factory('common');
+		$create_makefile->set_root_dir($opts['d'])->run();	
+	} catch (Exception $e) {
+		echo $e->getMessage() . PHP_EOL;	
+	}
+} else {
+	echo $help . PHP_EOL;
+	exit(1);
 }
