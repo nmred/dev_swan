@@ -1,14 +1,11 @@
 TARGET0 = /usr/local/dev_swan/app/
 
 SUBDIRS = sbin
-INC_SRC0 = empty.
  
 INSTALL0 = /usr/bin/install -m 644 -o swan -g swan $< $(TARGET0)
 
 
 all:
-empty.: empty
-	$(INSTALL0)
 
 
 INS_DIRS = \
@@ -27,5 +24,5 @@ make_dir0:
 	fi;
 
 
-install: make_dir0 $(INC_SRC0) 	
+install: make_dir0	
 	@$(INS_DIRS)
