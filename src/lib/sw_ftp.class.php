@@ -228,11 +228,11 @@ class sw_ftp
 	 * @access public
 	 * @return this
 	 */
-	public function get_list($path, $recursive = false)
+	public function get_list($path, $recursive = true)
 	{
 		$this->set_pasv(true);
 
-		$contents = ftp_rawlist ($this->__ftp, $path, true);
+		$contents = ftp_rawlist ($this->__ftp, $path, $recursive);
 		$files = array();
 
 		foreach ($contents as $key => $value) {
