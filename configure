@@ -89,7 +89,7 @@ class configure
 		$current_dir = getcwd();
 		foreach ($make_dirs as $dir_name) {
 			$path_all = rtrim($this->__root_dir, '/') . '/' .  $dir_name;
-			chdir($path_all);
+			file_exists($path_all) && chdir($path_all);
 			$make_file = sw_create_makefile::factory('common');
 			$make_file->set_root_dir($root_name)->run();
 			chdir($current_dir);
@@ -109,7 +109,7 @@ class configure
 	{
 		$make_dirs = array();
 		$sw_dir_iterator = new sw_iterator_fetch_dir($this->__root_dir);
-		$sw_dir_iterator->set_ignore_dir($this->__ignore_dir);
+		$sw_dir_iterator->set_ignore_dir($this->_get_ignore_dir());
 		foreach ($sw_dir_iterator as $key => $value) {
 			$filename = $value->getFilename();
 			if($filename == $this->__makefile_ini) {
@@ -118,6 +118,33 @@ class configure
 		}
 
 		return $make_dirs;
+	}
+
+	// }}}
+	// {{{ protected function _get_ignore_dir()
+
+	/**
+	 * 获取需要忽略的目录 
+	 * 
+	 * @access protected
+	 * @return array
+	 */
+	protected function _get_ignore_dir()
+	{
+		// 查找具有 submodule 的仓库
+		$ignore = array();
+		$git_config = $this->__root_dir . '.git/config';
+		if (is_file($git_config)) {
+			$configs = file($git_config);	
+			foreach ($configs as $value) {
+				if (preg_match('/\[submodule \"(.*)\"\]/i', $value, $matches)) {
+					$ignore[] = $matches[1] . '/.';
+				}	
+			}
+		}
+
+		$ignore = array_merge($this->__ignore_dir, $ignore);
+		return $ignore;
 	}
 
 	// }}}

@@ -98,8 +98,7 @@ class sw_iterator_fetch_dir extends RecursiveIteratorIterator
 	{
 		$sub_path = $this->getSubPathname();
 		while (parent::valid() 
-			&& (isset($this->__ignore_files[$sub_path]) 
-				|| isset($this->__self_ignore_dir[$sub_path . '/.']))) {
+			&& (isset($this->__ignore_files[$sub_path]))) { 
 			parent::next();
 			$sub_path = $this->getSubPathname();
 		}
@@ -134,9 +133,9 @@ class sw_iterator_fetch_dir extends RecursiveIteratorIterator
 		foreach ($ignore_dirs as $key => $value) {
 			if ('/.' == substr($value, -2)) {
 				$this->__self_ignore_dir[$value] = true;
-			} else {
-				$this->__ignore_dir[$value] = true;		
-			}	
+			} 
+			
+			$this->__ignore_dir[rtrim($value, '/.')] = true;		
 		} 
 		return $this;
 	}
