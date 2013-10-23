@@ -129,18 +129,28 @@ configure 用法
 	-h help
 	-m jjcm 批量执行jjcm
 	-m build_rpm 打包的时候会用 !!!开发的时候慎用!!!
+	-d make 目标目录
 
 EOL;
 
-$opts = getopt("hm:");
-if (isset($opts['m']) && !isset($opts['h'])) {
-	if ($opts['m'] === 'jjcm') {
-		$dir_name = '/usr/local/dev_swan/';	
-	} else if ($opts['m'] === 'build_rpm') {
-		$dir_name = '/usr/local/tmp_dev_swan_git/';	
-	} else {
+$opts = getopt("hd:m:");
+if (isset($opts['m']) || isset($opts['d'])) {
+	if (isset($opts['h'])) {
 		echo $help . PHP_EOL;	
 		exit(0);
+	}
+	
+	if ($opts['d']) {
+		$dir_name = $opts['d'];	
+	} else {
+		if ($opts['m'] === 'jjcm') {
+			$dir_name = '/usr/local/dev_swan/';	
+		} else if ($opts['m'] === 'build_rpm') {
+			$dir_name = '/usr/local/tmp_dev_swan_git/';	
+		} else {
+			echo $help . PHP_EOL;	
+			exit(0);
+		}
 	}
 
 	try {
@@ -151,4 +161,5 @@ if (isset($opts['m']) && !isset($opts['h'])) {
 	}
 } else {
 	echo $help . PHP_EOL;	
+	exit(0);
 }
