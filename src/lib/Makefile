@@ -1,4 +1,4 @@
-TARGET0 = /usr/local/tmp_dev_swan_git/lib/
+TARGET0 = /usr/local/dev_swan/lib/
 
 SUBDIRS = create_makefile xml iterator
 INC_SRC0 = sw_exception.class.php. sw_create_database_wiki.class.php. sw_create_database.class.php. sw_xml.class.php. sw_ftp.class.php. sw_create_makefile.class.php.

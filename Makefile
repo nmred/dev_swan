@@ -1,5 +1,5 @@
-TARGET0 = /usr/local/tmp_dev_swan_git/
-TARGET1 = /usr/local/tmp_dev_swan_git/
+TARGET0 = /usr/local/dev_swan/
+TARGET1 = /usr/local/dev_swan/
 
 SUBDIRS = src etc
 INC_SRC0 = .gitignore. dev_core.php.
