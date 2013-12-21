@@ -18,6 +18,7 @@
 # 此脚本将控制如下进程, 如果进程列表有变化, 则必须更新 Start, Stop 和 Watch:
 #   Httpd
 #   Snmpd
+#   Memcached
 #	Redis
 #   MySQL
 #   CRON_ETC
@@ -35,6 +36,7 @@ PATH_OPT_ETC="$PATH_OPT/etc"
 PATH_OPT_MYSQL="$PATH_OPT/mysql"
 PATH_OPT_HTTP="$PATH_OPT/apache2"
 PATH_OPT_REDIS="$PATH_OPT/redis"
+PATH_OPT_MEMCAHED="$PATH_OPT/memcached"
 PATH_OPT_SNMP="$PATH_OPT/snmp"
 PATH_RUN="$PATH_SWAN/run"
 PATH_LOG="$PATH_SWAN/log"
@@ -46,6 +48,7 @@ PATH_SW_CROND="/etc/cron.d/dev_swan"
 PIDF_MYSQL="$PATH_RUN/mysql.pid"
 PIDF_HTTPD="$PATH_RUN/httpd.pid"
 PIDF_REDIS="$PATH_RUN/redis.pid"
+PIDF_MEMECACHED="$PATH_RUN/memcached.pid"
 PIDF_SNMPD="$PATH_RUN/sw_snmpd.pid"
 
 ECHO_LINE="------------------------------"
@@ -385,6 +388,7 @@ watch_proc ()
         httpd
 		snmpd
 		redis
+		memcached
     )
 
     t_proc_name_watch="$1"
@@ -598,6 +602,21 @@ start_redis ()
     let "init_res = 0 || $?"
 }
 
+start_memcached ()
+{
+    init_res=0
+    init_msg=""
+
+    watch_proc memcached
+    if test "0" = "$watch_res"; then
+        init_res=2
+        return
+    fi
+
+    $PATH_OPT_MEMCAHED/bin/memcached -d -u swan -m 512 127.0.0.1 -p 11211 -P $PIDF_MEMECACHED 
+    let "init_res = 0 || $?"
+}
+
 start_snmpd ()
 {
     init_res=0
@@ -632,6 +651,7 @@ stop_proc ()
 {
     array_stop_common=(
 		snmpd
+		memcached
     )
 
     t_proc_name_stop="$1"
