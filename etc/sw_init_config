@@ -12,12 +12,14 @@ ARRAY_START=(
     httpd
 	snmpd
     redis
+	memcached
     cron_etc
 )
 
 # 需要停止的进程
 ARRAY_STOP=(
     cron_etc
+	memcached
 	redis
 	snmpd
     httpd
@@ -30,6 +32,7 @@ ARRAY_WATCH=(
     httpd "httpd"
 	snmpd "snmpd"
 	redis "redis-server"
+	memcached "memcached"
     cron_etc "crond_etc"
 )
 

@@ -48,7 +48,7 @@ PATH_SW_CROND="/etc/cron.d/dev_swan"
 PIDF_MYSQL="$PATH_RUN/mysql.pid"
 PIDF_HTTPD="$PATH_RUN/httpd.pid"
 PIDF_REDIS="$PATH_RUN/redis.pid"
-PIDF_MEMECACHED="$PATH_RUN/memcached.pid"
+PIDF_MEMCACHED="$PATH_RUN/sw_memcached.pid"
 PIDF_SNMPD="$PATH_RUN/sw_snmpd.pid"
 
 ECHO_LINE="------------------------------"
