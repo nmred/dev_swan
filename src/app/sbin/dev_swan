@@ -613,7 +613,7 @@ start_memcached ()
         return
     fi
 
-    $PATH_OPT_MEMCAHED/bin/memcached -d -u swan -m 512 127.0.0.1 -p 11211 -P $PIDF_MEMECACHED 
+    $PATH_OPT_MEMCAHED/bin/memcached -d -u swan -m 512 127.0.0.1 -p 11211 -P $PIDF_MEMCACHED 
     let "init_res = 0 || $?"
 }
 
