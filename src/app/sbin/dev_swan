@@ -45,9 +45,9 @@ PATH_LOG_STDOUT="$PATH_LOG/stdout"
 PATH_CONFIG="$PATH_OPT_ETC/sw_init_config"
 PATH_SW_CROND="/etc/cron.d/dev_swan"
 
-PIDF_MYSQL="$PATH_RUN/mysql.pid"
-PIDF_HTTPD="$PATH_RUN/httpd.pid"
-PIDF_REDIS="$PATH_RUN/redis.pid"
+PIDF_MYSQL="$PATH_RUN/sw_mysql.pid"
+PIDF_HTTPD="$PATH_RUN/sw_httpd.pid"
+PIDF_REDIS="$PATH_RUN/sw_redis.pid"
 PIDF_MEMCACHED="$PATH_RUN/sw_memcached.pid"
 PIDF_SNMPD="$PATH_RUN/sw_snmpd.pid"
 
