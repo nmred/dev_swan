@@ -47,8 +47,8 @@ if (isset($options['t'])) {
 			$output_name = '/root/code/swansoft/tests/';
 			break;	
 		case 'swan':
-			$file_name = '/root/code/swansoft/docs/database/db_schema.xml';
-			$output_name = '/root/code/swansoft/src/tmp_install/sql';
+			$file_name = '/root/i_code/swansoft/docs/database/db_schema.xml';
+			$output_name = '/root/i_code/swansoft/src/tmp_install/sql';
 			break;	
 		default:
 			echo $usage, PHP_EOL;

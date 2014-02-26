@@ -37,7 +37,7 @@ class sw_create_database_wiki
 	/**
 	 * 生成的SQL 数据字典文件名称 
 	 */
-	 const WIKI_NAME = 'mysql_desc.txt';
+	 const WIKI_NAME = 'mysql_desc.md';
 
 	// }}}	
 	// {{{ members
@@ -83,10 +83,13 @@ class sw_create_database_wiki
 		
 		$tmp = isset($array['databases']['database'][0]) ? $array['databases']['database'] : $array['databases'];
 
-		$output_str = '====== SwanSoft 产品数据字典 ======' . PHP_EOL . PHP_EOL;
+		$output_str = 'title: Smeta 产品数据字典' . PHP_EOL;
+		$output_str .= 'next: inner_api' . PHP_EOL;
+		$output_str .= 'prev: evn_deploy' . PHP_EOL;
+		$output_str .= '---' . PHP_EOL . PHP_EOL;
 		foreach ($tmp as $key => $value) {
 			$output = $this->__out_put_dir . self::WIKI_NAME ;
-			$output_str .= '===== ' . $value['@name'] . ' 数据库 =====' . PHP_EOL . PHP_EOL;
+			$output_str .= '### ' . $value['@name'] . ' 数据库 ###' . PHP_EOL . PHP_EOL;
 
 			$tmp_table = isset($value['tables']['table'][0]) ? $value['tables']['table'] : $value['tables'];
 			foreach ($tmp_table as $table) {
@@ -172,7 +175,7 @@ class sw_create_database_wiki
 	{
 		//连接描述信息
 
-		$desc_str = '| ' . $column['@name'];
+		$desc_str = $column['@name'];
 		$desc_str .= ' | ';
 		$desc_str .= $column['type'];
 		$desc_str .= ' | ';
@@ -185,9 +188,9 @@ class sw_create_database_wiki
 		$desc_str .=  isset($column['auto']) ? $column['auto'] : ' '; 
 		$desc_str .= ' | ';
 		$desc_str .=  isset($column['unsigned']) ? $column['unsigned'] : ' ';
-		$desc_str .= ' |' . PHP_EOL; 
+		$desc_str .= '' . PHP_EOL; 
 
-		$desc_str .= '| ::: | ' . $column['desc'] . ' ||||||' . PHP_EOL;
+		$desc_str .= ' | ' . $column['desc'] . ' ||||||' . PHP_EOL;
 
 		return $desc_str;
 	}
@@ -219,9 +222,9 @@ class sw_create_database_wiki
 	protected function _parse_key(array $key)
 	{
 		if ('primary' === $key['type']) {
-			$sql_str = '^ 主键 | ';
+			$sql_str = ' 主键 | ';
 		} else {
-			$sql_str = '^ 索引 | ';
+			$sql_str = ' 索引 | ';
 		}
 
 		$tmp_field = isset($key['fields']['field'][0]) ? $key['fields']['field'] : $key['fields'];
@@ -229,7 +232,7 @@ class sw_create_database_wiki
 		foreach ($tmp_field as $value) {
 			$tmp_sql_arr[] = self::SQL_SIGN . $value['@name'] . self::SQL_SIGN;
 		}
-		$sql_str .= implode(',', $tmp_sql_arr) . '|' . PHP_EOL;
+		$sql_str .= implode(',', $tmp_sql_arr) . '' . PHP_EOL;
 
 		return $sql_str;
 	}
@@ -246,11 +249,13 @@ class sw_create_database_wiki
 	protected function _parse_table(array $table)
 	{
 		//连接描述信息
-		$desc_str = '====' . $table['@name'] . '====' . PHP_EOL;
-		$desc_str .= '^ 表名 | ' . $table['@name'] . ' |' . PHP_EOL;
-		$desc_str .= '^ 描述 | ' . $table['desc'] . ' |' . PHP_EOL;
-		$desc_str .= '^ Engine | ' . $table['engine'] . ' |' . PHP_EOL;
-		$desc_str .= '^ 编码 | ' . $table['charset'] . ' |' . PHP_EOL;
+		$desc_str = '####' . $table['@name'] . '####' . PHP_EOL;
+		$desc_str .= PHP_EOL . ' - | 属性名' . PHP_EOL;
+		$desc_str .= '--- | --- ' . PHP_EOL;
+		$desc_str .= ' 表名 |' . $table['@name'] . '' . PHP_EOL;
+		$desc_str .= ' 描述 | ' . $table['desc'] . '' . PHP_EOL;
+		$desc_str .= ' Engine |  ' . $table['engine'] . '' . PHP_EOL;
+		$desc_str .= ' 编码 | ' . $table['charset'] . '' . PHP_EOL;
 		//生成主键和索引
 		$tmp_key = isset($table['keys']['key'][0]) ? $table['keys']['key'] : $table['keys'];
 		foreach ($tmp_key as $key) {
@@ -259,7 +264,8 @@ class sw_create_database_wiki
 
 		$desc_str .= PHP_EOL;
 
-		$desc_str .= '^ 字段名 ^ 类型 ^ nullable ^ 宽度 ^ 默认值  ^ auto ^ unsigned ^' . PHP_EOL;
+		$desc_str .= ' 字段名 | 类型 | nullable | 宽度 | 默认值  | auto | unsigned ' . PHP_EOL;
+		$desc_str .= ' --- | --- | --- | --- | ---  | --- | --- ' . PHP_EOL;
 
 		//生成字段语句
 		$tmp_column = isset($table['columns']['column'][0]) ? $table['columns']['column'] : $table['columns'];
