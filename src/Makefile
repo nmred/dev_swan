@@ -1,6 +1,6 @@
-TARGET0 = /usr/local/tmp_dev_swan_git/
+TARGET0 = /usr/local/dev_swan/
 
-SUBDIRS = app lib tmp_install
+SUBDIRS = lib app tmp_install
  
 INSTALL0 = /usr/bin/install -m 755 -o root -g root $< $(TARGET0)
 

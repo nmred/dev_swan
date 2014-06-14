@@ -43,12 +43,12 @@ if (isset($options['h'])) {
 if (isset($options['t'])) {
 	switch ($options['t']) {
 		case 'unit':
-			$file_name = '/root/code/swansoft/tests/db_schema.xml';
-			$output_name = '/root/code/swansoft/tests/';
+			$file_name = '/root/code/smeta/tests/db_schema.xml';
+			$output_name = '/root/code/smeta/tests/';
 			break;	
 		case 'swan':
-			$file_name = '/root/i_code/swansoft/docs/database/db_schema.xml';
-			$output_name = '/root/i_code/swansoft/src/tmp_install/sql';
+			$file_name = '/root/code/smeta/docs/database/db_schema.xml';
+			$output_name = '/root/code/smeta/src/tmp_install/sql';
 			break;	
 		default:
 			echo $usage, PHP_EOL;

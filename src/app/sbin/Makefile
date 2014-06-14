@@ -1,7 +1,7 @@
-TARGET0 = /usr/local/tmp_dev_swan_git/app/sbin/
+TARGET0 = /usr/local/dev_swan/app/sbin/
 
 SUBDIRS = 
-INC_SRC0 = create_database. create_database_wiki. jjcm. dev_swan.
+INC_SRC0 = create_database. create_database_wiki. dev_swan. jjcm.
  
 INSTALL0 = /usr/bin/install -m 755 -o swan -g swan $< $(TARGET0)
 
@@ -11,9 +11,9 @@ create_database.: create_database
 	$(INSTALL0)
 create_database_wiki.: create_database_wiki
 	$(INSTALL0)
-jjcm.: jjcm
-	$(INSTALL0)
 dev_swan.: dev_swan
+	$(INSTALL0)
+jjcm.: jjcm
 	$(INSTALL0)
 
 
